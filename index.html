@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Manda Lite</title>
+  <link rel="stylesheet" href="components/style.css" />
+  <link rel="icon" href="components/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/dist/highlight.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" defer></script>
+  
+  <!-- Solución para problemas de position:fixed en WebView -->
+  <style>
+    /* Forzar visibilidad inicial del panel lateral */
+    #chat-list-sidebar {
+      display: none; /* Inicialmente oculto, script lo controla */
+    }
+    
+    /* Solución para problemas de teclado en WebView */
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    /* Solución para problemas de posicionamiento en dispositivos con notch */
+    @supports (padding: max(0px)) {
+      .app-container {
+        padding-top: max(0px, env(safe-area-inset-top, 0px));
+        padding-right: max(0px, env(safe-area-inset-right, 0px));
+        padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
+        padding-left: max(0px, env(safe-area-inset-left, 0px));
+      }
+    }
+    
+    /* Forzar hardware acceleration para WebView en Android */
+    .chat-list-sidebar {
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-perspective: 1000;
+      perspective: 1000;
+    }
+    
+    /* Mejorar touch events en Android */
+    .panel-toggle, .sidebar-overlay {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    
+    /* Asegurar que el overlay cubra toda la pantalla en Android */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ÚNICO BOTÓN PARA ABRIR PANEL LATERAL -->
+  <div class="panel-toggle" id="chat-list-toggle" aria-label="Abrir panel lateral" role="button" tabindex="0">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path d="M4 5h10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 12h16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 19h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- OVERLAY PARA CERRAR SIDEBAR EN MÓVILES -->
+  <div class="sidebar-overlay"></div>
+
+  <div class="app" role="application" aria-label="Manda Studio Lite">
+    <section class="chat-wrap" aria-live="polite">
+      <main class="messages" id="messages" tabindex="0" aria-label="Mensajes"></main>
+    </section>
+
+    <!-- INPUT TRAY -->
+    <div class="input-tray" role="region" aria-label="Escribir mensaje">
+      <input type="file" id="fileInput" accept=".txt,.md,.pdf,.doc,.docx,image/*,audio/*,video/*" multiple aria-label="Seleccionar archivos" hidden />
+
+      <button class="tray-btn tray-btn--ghost attach-btn" id="attachBtn" title="Adjuntar" aria-label="Adjuntar archivo">
+        <svg class="tray-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 11V7a5 5 0 0 0-10 0v9a3 3 0 0 0 6 0v-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 8v9a5 5 0 0 0 10 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="sr-only">Adjuntar archivo</span>
+      </button>
+
+      <textarea id="input" class="input input-tray__textarea" placeholder="Escribe un mensaje..." rows="1" aria-label="Escribir mensaje"></textarea>
+
+      <button class="tray-btn tray-btn--primary send-btn" id="sendBtn" title="Enviar" aria-label="Enviar mensaje">
+        <svg class="tray-icon send-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path class="send-icon__body" d="M22 3 13.5 20.5l-2.2-7.1L4.2 11 22 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path class="send-icon__tail" d="M11.5 13.5 22 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="sr-only">Enviar mensaje</span>
+      </button>
+      <div id="attachmentPreview" class="attachment-preview" aria-live="polite"></div>
+      <div id="sendStatus" class="send-status" role="status" aria-live="assertive"></div>
+    </div>
+  </div>
+
+  <!-- CHAT LIST SIDEBAR -->
+  <aside id="chat-list-sidebar" class="chat-list-sidebar" aria-hidden="true">
+    <div class="sidebar-shell">
+      <div class="sidebar-top-bar">
+        <h2 class="sidebar-title">Manda Lite</h2>
+      </div>
+
+      <div class="card-navigation-container" data-active-panel="A">
+        <div id="panel-A" class="nav-panel" aria-labelledby="panel-a-title">
+          <div id="nav-card-grid" class="card-grid nav-card-grid" role="list"></div>
+        </div>
+
+        <div id="panel-B" class="nav-panel" aria-labelledby="panel-b-title">
+          <div class="panel-header">
+            <button class="back-button" type="button" aria-label="Volver">←</button>
+            <h3 id="panel-b-title" class="panel-title"></h3>
+          </div>
+          <div class="panel-body">
+            <section id="nav-section-history" class="nav-section" hidden aria-label="Historial de chats">
+              <div class="section-heading">
+                <button id="new-chat-btn" class="new-chat-btn">+ Nuevo Chat</button>
+                <button id="merge-chats-btn" class="new-chat-btn" disabled>Fusionar chats</button>
+              </div>
+              <div id="chat-list-container" class="chat-list-container"></div>
+            </section>
+
+            <section id="nav-section-params" class="nav-section" hidden aria-label="Parámetros del modelo">
+              <div id="params-info-container" class="info-panel"></div>
+            </section>
+
+            <section id="nav-section-model" class="nav-section" hidden aria-label="Detalles del modelo">
+              <div class="model-cards" role="list">
+                <button class="model-card" type="button" data-model-id="gemini-flash-latest" role="listitem">
+                  <div class="model-card-header">
+                    <span class="model-card-title">Gemini Flash</span>
+                    <span class="model-card-subtitle">Velocidad equilibrada</span>
+                  </div>
+                  <div class="model-card-body">
+                    <p>Ideal para experiencias agénticas rápidas con excelente comprensión multimodal.</p>
+                    <div class="model-card-meta">
+                      <span>Alias</span>
+                      <strong>gemini-flash-latest</strong>
+                    </div>
+                  </div>
+                </button>
+
+                <button class="model-card" type="button" data-model-id="gemini-flash-lite-latest" role="listitem">
+                  <div class="model-card-header">
+                    <span class="model-card-title">Gemini Flash Lite</span>
+                    <span class="model-card-subtitle">Ultra eficiente</span>
+                  </div>
+                  <div class="model-card-body">
+                    <p>Optimizado para costos bajos, respuestas concisas y traducción multimodal precisa.</p>
+                    <div class="model-card-meta">
+                      <span>Alias</span>
+                      <strong>gemini-flash-lite-latest</strong>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              <div id="model-info-container" class="info-panel"></div>
+            </section>
+
+            <section id="nav-section-api-keys" class="nav-section" hidden aria-label="Gestión de claves API">
+              <div id="api-key-container" class="card-grid"></div>
+            </section>
+
+            <section id="nav-section-settings" class="nav-section" hidden aria-label="Configuraciones adicionales">
+              <div class="info-panel">
+                <h4>Configuraciones</h4>
+                <p>Personaliza la aplicación. Próximamente más opciones.</p>
+              </div>
+
+              <div class="info-panel">
+                <h4>Créditos</h4>
+                <p>Desarrollado por Manda Studio</p>
+                <p>Version 1.19</p>
+                <p>2025-10-20</p>
+              </div>
+              
+
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CUSTOM PROMPT MODAL -->
+  <div id="custom-prompt-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="custom-prompt-close">&times;</span>
+      <div class="modal-body">
+        <h3 id="custom-prompt-title">Ingrese un valor</h3>
+        <input type="text" id="custom-prompt-input" />
+        <div class="modal-actions">
+          <button id="custom-prompt-cancel" class="btn-cancel">Cancelar</button>
+          <button id="custom-prompt-confirm" class="btn-confirm">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="components/index.js" type="module" defer></script>
+  <script src="components/sidebar-navigation.js" type="module" defer></script>
+  
+  <!-- Solución para forzar visibilidad del panel lateral -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleBtn = document.getElementById('chat-list-toggle');
+      const sidebar = document.getElementById('chat-list-sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+
+      // Función simple para toggle
+      function toggleSidebar() {
+        if (sidebar.style.display === 'block') {
+          sidebar.style.display = 'none';
+          if (overlay) overlay.style.display = 'none';
+          toggleBtn.setAttribute('aria-expanded', 'false');
+          // Remover focus para evitar issues con teclado en Android
+          document.body.focus();
+        } else {
+          sidebar.style.display = 'block';
+          if (overlay) overlay.style.display = 'block';
+          toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+      }
+
+      // Evento click en botón
+      toggleBtn.addEventListener('click', toggleSidebar);
+
+      // Cerrar con overlay
+      if (overlay) {
+        overlay.addEventListener('click', toggleSidebar);
+      }
+
+      // Manejar focus en Android para evitar problemas con teclado
+      document.addEventListener('focusin', function(e) {
+        if (e.target.closest('#chat-list-sidebar')) {
+          // Si focus está en sidebar, cerrar al perder focus
+          setTimeout(() => {
+            if (!document.activeElement.closest('#chat-list-sidebar')) {
+              toggleSidebar();
+            }
+          }, 100);
+        }
+      });
+
+      // Inicializar cerrado (ya manejado por CSS, pero asegurar)
+      sidebar.style.display = 'none';
+      if (overlay) overlay.style.display = 'none';
+      toggleBtn.setAttribute('aria-expanded', 'false');
+
+      // Añadir meta viewport si no existe (para móviles)
+      let viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (!viewportMeta) {
+        viewportMeta = document.createElement('meta');
+        viewportMeta.name = "viewport";
+        viewportMeta.content = "width=device-width, initial-scale=1, viewport-fit=cover";
+        document.head.appendChild(viewportMeta);
+      }
+    });
+  </script>
+</body>
+</html>
