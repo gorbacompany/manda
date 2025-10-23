@@ -1,0 +1,719 @@
+// chat-manager.js - Gestión de chats y almacenamiento
+
+// Importar funciones necesarias de otros módulos
+import { addMessageToChat } from './chat-ui.js';
+import { showCustomConfirm, showCustomPrompt } from './ui-modals.js';
+import { showNotification } from './utils.js';
+import { resetSidebarNavigation } from './sidebar-navigation.js';
+
+let chatListSidebarElement = null;
+let sidebarOverlayElement = null;
+let chatListToggleButton = null;
+let closeChatListButton = null;
+let newChatButton = null;
+let mergeChatsButton = null;
+const selectedChatIds = new Set();
+
+// Función para generar ID único para chats
+function generateChatId() {
+    return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Función para guardar el estado actual del chat
+function saveCurrentChat() {
+    const messages = Array.from(document.getElementById('messages').children).map(msg => {
+        const typeFromClass = msg.className.split(' ')[1] || 'message';
+        const storedContent = msg.dataset?.messageContent;
+        const storedType = msg.dataset?.messageSender;
+        const contentFallback = msg.querySelector('.msg-content')?.textContent || msg.textContent;
+
+        return {
+            content: storedContent ?? contentFallback,
+            type: storedType ?? typeFromClass
+        };
+    });
+
+    const currentChatId = localStorage.getItem('current_chat_id') || generateChatId();
+
+    const chatData = {
+        id: currentChatId,
+        timestamp: new Date().toISOString(),
+        messages: messages,
+        title: getChatTitle(messages)
+    };
+
+    // Guardar chat individual
+    localStorage.setItem(`chat_${currentChatId}`, JSON.stringify(chatData));
+
+    // Actualizar lista de chats
+    updateChatList();
+
+    // Guardar ID del chat actual
+    localStorage.setItem('current_chat_id', currentChatId);
+
+    return currentChatId;
+}
+
+// Función para obtener título del chat basado en primeros mensajes
+function getChatTitle(messages) {
+    if (messages.length === 0) return 'Nuevo chat';
+
+    // Buscar el primer mensaje del usuario
+    const firstUserMessage = messages.find(msg => msg.type === 'user');
+    if (firstUserMessage) {
+        let content = firstUserMessage.content;
+        // Tomar las primeras 64 letras del mensaje
+        content = content.substring(0, 64);
+
+        // Verificar si el título ya existe y generar uno único
+        return generateUniqueTitle(content);
+    }
+
+    return 'Nuevo chat';
+}
+
+// Función para generar título único (simplificada)
+function generateUniqueTitle(baseTitle) {
+    // Por simplicidad, devolver el título base por ahora
+    // En una implementación más completa, verificaríamos contra títulos existentes
+    return baseTitle;
+}
+
+// Función para copiar el contenido completo de un chat al portapapeles
+function copyChatContent(chatId) {
+    const chatData = localStorage.getItem(`chat_${chatId}`);
+    if (!chatData) return false;
+
+    try {
+        const chat = JSON.parse(chatData);
+        let content = `Chat: ${chat.title}\n`;
+        content += `Fecha: ${new Date(chat.timestamp).toLocaleString()}\n`;
+        content += `Número de mensajes: ${chat.messages.length}\n\n`;
+
+        // Agregar cada mensaje con formato
+        chat.messages.forEach((msg, index) => {
+            const sender = msg.type === 'user' ? 'Usuario' : msg.type === 'bot' ? 'Bot' : 'Sistema';
+            content += `--- Mensaje ${index + 1} ---\n`;
+            content += `${sender}: ${msg.content}\n\n`;
+        });
+
+        // Copiar al portapapeles
+        navigator.clipboard.writeText(content).then(() => {
+            showNotification('¡Chat copiado al portapapeles!', 'success');
+        }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+            showNotification('Error al copiar el chat al portapapeles', 'error');
+        });
+
+        return true;
+    } catch (error) {
+        console.error('Error al obtener datos del chat:', error);
+        return false;
+    }
+}
+
+function sanitizeFileName(name) {
+    return (name || 'chat')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[\\/:*?"<>|]+/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .slice(0, 120) || 'chat';
+}
+
+function buildChatMarkdown(chat) {
+    const lines = [];
+    const title = chat.title?.trim() || 'Conversación sin título';
+    lines.push(`# ${title}`);
+
+    if (chat.timestamp) {
+        lines.push(`*Fecha:* ${new Date(chat.timestamp).toLocaleString()}`);
+    }
+
+    lines.push(`*Mensajes:* ${chat.messages?.length ?? 0}`);
+    lines.push('');
+
+    (chat.messages || []).forEach((msg, index) => {
+        const sender = msg.type === 'user' ? 'Usuario' : msg.type === 'bot' ? 'Asistente' : 'Sistema';
+        lines.push(`## Mensaje ${index + 1} — ${sender}`);
+        lines.push('');
+        lines.push(msg.content || '');
+        lines.push('');
+    });
+
+    return lines.join('\n');
+}
+
+function downloadChatMarkdown(chatId) {
+    const chatData = localStorage.getItem(`chat_${chatId}`);
+    if (!chatData) return false;
+
+    try {
+        const chat = JSON.parse(chatData);
+        const markdown = buildChatMarkdown(chat);
+        const fileName = `${sanitizeFileName(chat.title)}.md`;
+        const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        showNotification('Chat descargado en Markdown', 'success');
+        return true;
+    } catch (error) {
+        console.error('Error al descargar chat:', error);
+        showNotification('No se pudo descargar el chat', 'error');
+        return false;
+    }
+}
+
+// Función para cargar un chat específico
+function loadChat(chatId) {
+    const chatData = localStorage.getItem(`chat_${chatId}`);
+    if (!chatData) return false;
+
+    try {
+        const chat = JSON.parse(chatData);
+        const messagesContainer = document.getElementById('messages');
+        messagesContainer.innerHTML = '';
+
+        chat.messages.forEach(msg => {
+            addMessageToChat(msg.content, msg.type);
+        });
+
+        // Actualizar ID del chat actual
+        localStorage.setItem('current_chat_id', chatId);
+
+        return true;
+    } catch (error) {
+        console.error('Error al cargar chat:', error);
+        return false;
+    }
+}
+
+// Función para obtener lista de chats guardados
+function getChatList() {
+    const chats = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('chat_') && key !== 'current_chat_id') {
+            try {
+                const chatData = JSON.parse(localStorage.getItem(key));
+                chats.push({
+                    id: chatData.id,
+                    title: chatData.title,
+                    timestamp: chatData.timestamp,
+                    messageCount: chatData.messages.length
+                });
+            } catch (error) {
+                console.error('Error al cargar datos del chat:', error);
+            }
+        }
+    }
+
+    // Ordenar por timestamp (más reciente primero)
+    return chats.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+}
+
+// Función para actualizar la lista de chats en la interfaz
+function updateChatList() {
+    const chatList = getChatList();
+    const currentChatId = localStorage.getItem('current_chat_id');
+
+    document.dispatchEvent(new CustomEvent('chats:updated', {
+        detail: {
+            count: chatList.length,
+            currentChatId
+        }
+    }));
+
+    return { chatList, currentChatId };
+}
+
+function renameChat(chatId, newTitle) {
+    if (!chatId || !newTitle) return;
+    const key = `chat_${chatId}`;
+    const chatDataRaw = localStorage.getItem(key);
+    if (!chatDataRaw) return;
+
+    try {
+        const chatData = JSON.parse(chatDataRaw);
+        chatData.title = newTitle;
+        localStorage.setItem(key, JSON.stringify(chatData));
+
+        const currentChatId = localStorage.getItem('current_chat_id');
+        if (currentChatId === chatId) {
+            document.dispatchEvent(new CustomEvent('chat:titleUpdated', {
+                detail: { chatId, title: newTitle }
+            }));
+        }
+    } catch (error) {
+        console.error('Error al renombrar chat:', error);
+        showNotification('No se pudo renombrar el chat', 'error');
+    }
+}
+
+// Función para crear un nuevo chat
+function createNewChat() {
+    // Guardar el chat actual antes de crear uno nuevo
+    if (document.getElementById('messages').children.length > 0) {
+        saveCurrentChat();
+    }
+
+    // Crear nuevo ID de chat
+    const newChatId = generateChatId();
+
+    // Limpiar mensajes actuales
+    document.getElementById('messages').innerHTML = '';
+
+    // Establecer nuevo chat como actual
+    localStorage.setItem('current_chat_id', newChatId);
+
+    return newChatId;
+}
+
+// Función para eliminar un chat
+function deleteChat(chatId) {
+    localStorage.removeItem(`chat_${chatId}`);
+    if (selectedChatIds.has(chatId)) {
+        selectedChatIds.delete(chatId);
+        updateMergeButtonState();
+    }
+
+    const currentChatId = localStorage.getItem('current_chat_id');
+    if (currentChatId === chatId) {
+        createNewChat();
+    }
+
+    updateChatList();
+
+    document.dispatchEvent(new CustomEvent('chats:updated'));
+}
+
+// Función para configurar la gestión de chats
+function setupChatList() {
+    chatListSidebarElement = document.getElementById('chat-list-sidebar');
+    chatListToggleButton = document.getElementById('chat-list-toggle');
+    closeChatListButton = document.getElementById('close-chat-list');
+    newChatButton = document.getElementById('new-chat-btn');
+    mergeChatsButton = document.getElementById('merge-chats-btn');
+    sidebarOverlayElement = document.querySelector('.sidebar-overlay');
+
+    if (chatListSidebarElement) {
+        chatListSidebarElement.setAttribute('aria-hidden', 'true');
+    }
+
+    chatListToggleButton?.addEventListener('click', () => {
+        const isOpen = chatListSidebarElement?.classList.contains('open');
+        if (isOpen) {
+            closeSidebar();
+        } else {
+            resetSidebarNavigation();
+            openSidebar();
+        }
+    });
+
+    closeChatListButton?.addEventListener('click', () => {
+        closeSidebar();
+    });
+
+    sidebarOverlayElement?.addEventListener('click', () => {
+        closeSidebar();
+    });
+
+    newChatButton?.addEventListener('click', () => {
+        createNewChat();
+        clearChatSelection();
+        renderChatList();
+        closeSidebar();
+        document.getElementById('input')?.focus();
+    });
+
+    mergeChatsButton?.addEventListener('click', handleMergeSelectedChats);
+
+    window.addEventListener('resize', () => {
+        if (!chatListSidebarElement) return;
+        if (chatListSidebarElement.classList.contains('open')) {
+            updateOverlayState();
+        }
+    });
+
+    document.addEventListener('sidebar:section-enter', (event) => {
+        if (event.detail?.sectionId === 'history') {
+            renderChatList();
+        }
+    });
+
+    document.addEventListener('sidebar:panel-root', () => {
+        const container = document.getElementById('chat-list-container');
+        container?.scrollTo({ top: 0, behavior: 'auto' });
+        clearChatSelection();
+    });
+
+    const handleGlobalPointerDown = (event) => {
+        if (!chatListSidebarElement?.classList.contains('open')) return;
+        const target = event.target;
+        if (chatListSidebarElement.contains(target)) return;
+        if (chatListToggleButton?.contains(target)) return;
+        closeSidebar();
+    };
+
+    const handleFocusIn = (event) => {
+        if (!chatListSidebarElement?.classList.contains('open')) return;
+        const target = event.target;
+        if (chatListSidebarElement.contains(target)) return;
+        if (chatListToggleButton?.contains(target)) return;
+        closeSidebar();
+    };
+
+    document.addEventListener('pointerdown', handleGlobalPointerDown, true);
+    document.addEventListener('focusin', handleFocusIn, true);
+
+    updateMergeButtonState();
+}
+
+function openSidebar() {
+    if (!chatListSidebarElement) return;
+    chatListSidebarElement.classList.add('open');
+    chatListSidebarElement.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('sidebar-open');
+    updateOverlayState();
+}
+
+function closeSidebar() {
+    if (!chatListSidebarElement) return;
+    chatListSidebarElement.classList.remove('open');
+    chatListSidebarElement.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('sidebar-open');
+    sidebarOverlayElement?.classList.remove('active');
+    resetSidebarNavigation();
+}
+
+function updateOverlayState() {
+    if (!sidebarOverlayElement) return;
+    if (window.innerWidth <= 1024) {
+        sidebarOverlayElement.classList.add('active');
+    } else {
+        sidebarOverlayElement.classList.remove('active');
+    }
+}
+
+// Función para renderizar la lista de chats
+function renderChatList() {
+    const { chatList, currentChatId } = updateChatList();
+    const chatListContainer = document.getElementById('chat-list-container');
+    const sidebarElement = chatListSidebarElement ?? document.getElementById('chat-list-sidebar');
+    if (!chatListContainer || !sidebarElement) return;
+    chatListContainer.innerHTML = '';
+
+    if (chatList.length === 0) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'chat-list-empty';
+        emptyDiv.textContent = 'No hay chats guardados';
+        chatListContainer.appendChild(emptyDiv);
+        return;
+    }
+
+    chatList.forEach(chat => {
+        const chatItem = document.createElement('div');
+        const isActive = chat.id === currentChatId;
+        const isSelected = selectedChatIds.has(chat.id);
+        chatItem.className = `chat-list-item${isActive ? ' active' : ''}${isSelected ? ' selected' : ''}`;
+        chatItem.dataset.chatId = chat.id;
+
+        const titleContainer = document.createElement('div');
+        titleContainer.className = 'chat-title-container';
+
+        const title = document.createElement('div');
+        title.className = 'chat-title';
+        title.textContent = chat.title;
+
+        const selectionCheckbox = document.createElement('input');
+        selectionCheckbox.type = 'checkbox';
+        selectionCheckbox.className = 'chat-select-checkbox';
+        selectionCheckbox.checked = isSelected;
+        selectionCheckbox.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        selectionCheckbox.addEventListener('change', (e) => {
+            toggleChatSelection(chat.id, e.target.checked);
+            chatItem.classList.toggle('selected', e.target.checked);
+        });
+
+        const controlsContainer = document.createElement('div');
+        controlsContainer.className = 'chat-controls';
+
+        // Botón de copiar
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'chat-control-btn chat-copy-btn';
+        copyBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M15 3H6a2 2 0 0 0-2 2v11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M9 7h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="sr-only">Copiar chat</span>
+        `;
+        copyBtn.dataset.chatId = chat.id;
+        copyBtn.title = 'Copiar chat';
+        copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            copyChatContent(chat.id);
+        });
+
+        // Botón de descargar
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'chat-control-btn chat-download-btn';
+        downloadBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3v12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M7 11l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M5 19h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="sr-only">Descargar chat</span>
+        `;
+        downloadBtn.dataset.chatId = chat.id;
+        downloadBtn.title = 'Descargar chat en Markdown';
+        downloadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            downloadChatMarkdown(chat.id);
+        });
+
+        // Botón de renombrar
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'chat-control-btn chat-rename-btn';
+        renameBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M16.862 3.487 20.513 7.14a1.5 1.5 0 0 1 0 2.121L10.05 19.724l-4.121.707.707-4.122 10.463-10.464a1.5 1.5 0 0 1 2.121 0Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M14.389 5.96 18.04 9.61" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="sr-only">Renombrar chat</span>
+        `;
+        renameBtn.dataset.chatId = chat.id;
+        renameBtn.title = 'Renombrar chat';
+        renameBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const newTitle = await showCustomPrompt('Renombrar chat', chat.title || '');
+            if (typeof newTitle === 'string' && newTitle.trim()) {
+                renameChat(chat.id, newTitle.trim());
+                renderChatList();
+                showNotification('Título actualizado', 'success');
+            }
+        });
+
+        // Botón de borrar
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'chat-control-btn chat-delete-btn';
+        deleteBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 7h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M10 11v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M14 11v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="sr-only">Eliminar chat</span>
+        `;
+        deleteBtn.dataset.chatId = chat.id;
+        deleteBtn.title = 'Eliminar chat';
+        deleteBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const result = await showCustomConfirm('¿Eliminar este chat?');
+            if (result) {
+                deleteChat(chat.id);
+                renderChatList();
+            }
+        });
+
+        controlsContainer.appendChild(copyBtn);
+        controlsContainer.appendChild(downloadBtn);
+        controlsContainer.appendChild(renameBtn);
+        controlsContainer.appendChild(deleteBtn);
+        titleContainer.appendChild(selectionCheckbox);
+        titleContainer.appendChild(title);
+        titleContainer.appendChild(controlsContainer);
+
+        const meta = document.createElement('div');
+        meta.className = 'chat-meta';
+        meta.textContent = `${chat.messageCount} mensajes • ${formatDate(chat.timestamp)}`;
+
+        chatItem.appendChild(titleContainer);
+        chatItem.appendChild(meta);
+
+        // Evento click para cargar chat
+        chatItem.addEventListener('click', () => {
+            clearChatSelection();
+            loadChat(chat.id);
+            closeSidebar();
+            renderChatList();
+        });
+
+        chatListContainer.appendChild(chatItem);
+    });
+}
+
+function toggleChatSelection(chatId, isSelected) {
+    if (isSelected) {
+        selectedChatIds.add(chatId);
+    } else {
+        selectedChatIds.delete(chatId);
+    }
+    updateMergeButtonState();
+}
+
+function clearChatSelection() {
+    if (selectedChatIds.size === 0) {
+        updateMergeButtonState();
+        return;
+    }
+    selectedChatIds.clear();
+    document.querySelectorAll('.chat-select-checkbox').forEach((checkbox) => {
+        checkbox.checked = false;
+    });
+    document.querySelectorAll('.chat-list-item.selected').forEach((item) => {
+        item.classList.remove('selected');
+    });
+    updateMergeButtonState();
+}
+
+function updateMergeButtonState() {
+    if (!mergeChatsButton) return;
+    const shouldDisable = selectedChatIds.size < 2;
+    mergeChatsButton.disabled = shouldDisable;
+    mergeChatsButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
+}
+
+function handleMergeSelectedChats() {
+    if (selectedChatIds.size < 2) {
+        return;
+    }
+    const chatIds = Array.from(selectedChatIds);
+    const mergedChatId = mergeChats(chatIds);
+    if (!mergedChatId) {
+        showNotification('No se pudo fusionar los chats seleccionados', 'error');
+        return;
+    }
+    clearChatSelection();
+    loadChat(mergedChatId);
+    renderChatList();
+    showNotification('Chats fusionados correctamente', 'success');
+}
+
+function mergeChats(chatIds) {
+    if (!Array.isArray(chatIds) || chatIds.length < 2) {
+        return null;
+    }
+
+    const uniqueIds = Array.from(new Set(chatIds)).filter(Boolean);
+    if (uniqueIds.length < 2) {
+        return null;
+    }
+
+    const chatsToMerge = [];
+
+    uniqueIds.forEach(chatId => {
+        const storedChat = localStorage.getItem(`chat_${chatId}`);
+        if (!storedChat) {
+            return;
+        }
+
+        try {
+            const parsedChat = JSON.parse(storedChat);
+            if (!parsedChat?.messages || !Array.isArray(parsedChat.messages)) {
+                return;
+            }
+
+            chatsToMerge.push(parsedChat);
+        } catch (error) {
+            console.error('Error al parsear chat para fusión:', error);
+        }
+    });
+
+    if (chatsToMerge.length < 2) {
+        return null;
+    }
+
+    chatsToMerge.sort((a, b) => {
+        const timeA = new Date(a.timestamp || 0).getTime();
+        const timeB = new Date(b.timestamp || 0).getTime();
+        return timeA - timeB;
+    });
+
+    const mergedMessages = [];
+
+    chatsToMerge.forEach(chat => {
+        chat.messages.forEach((message, index) => {
+            if (!message || typeof message !== 'object') {
+                return;
+            }
+
+            mergedMessages.push({
+                content: message.content ?? '',
+                type: message.type ?? 'message',
+                timestamp: message.timestamp || `${chat.timestamp || ''}#${index}`
+            });
+        });
+    });
+
+    if (mergedMessages.length === 0) {
+        return null;
+    }
+
+    mergedMessages.sort((a, b) => {
+        const timeA = new Date(a.timestamp || 0).getTime();
+        const timeB = new Date(b.timestamp || 0).getTime();
+        if (timeA === timeB) {
+            return 0;
+        }
+        return timeA - timeB;
+    });
+
+    const mergedChatId = generateChatId();
+    const sanitizedMessages = mergedMessages.map(({ content, type }) => ({ content, type }));
+
+    const mergedChatData = {
+        id: mergedChatId,
+        timestamp: new Date().toISOString(),
+        messages: sanitizedMessages,
+        title: getChatTitle(sanitizedMessages)
+    };
+
+    localStorage.setItem(`chat_${mergedChatId}`, JSON.stringify(mergedChatData));
+    updateChatList();
+
+    return mergedChatId;
+}
+
+// Función para formatear fecha
+function formatDate(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+        return 'Hoy';
+    } else if (diffDays === 1) {
+        return 'Ayer';
+    } else if (diffDays < 7) {
+        return `Hace ${diffDays} días`;
+    } else {
+        return date.toLocaleDateString();
+    }
+}
+
+// Exportar funciones necesarias
+export {
+    setupChatList,
+    createNewChat,
+    loadChat,
+    saveCurrentChat,
+    getChatList,
+    copyChatContent,
+    downloadChatMarkdown,
+    deleteChat,
+    mergeChats
+};
