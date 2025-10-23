@@ -1,8 +1,8 @@
 /* Navigation Cards */
 .nav-card {
   composes: card from './cards.css';
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  border-radius: var(--radius-round);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
   gap: 16px;
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -15,9 +15,9 @@
 .nav-card:hover,
 .nav-card:focus-visible,
 .nav-card.active {
-  border-color: rgba(99, 102, 241, 0.6);
+  border-color: rgba(99, 102, 241, 0.25);
   box-shadow:
-    0 16px 32px rgba(99, 102, 241, 0.24),
+    0 16px 32px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transform: translateY(-4px);
   background: linear-gradient(160deg, rgba(24, 24, 36, 0.95), rgba(9, 9, 16, 0.9));
