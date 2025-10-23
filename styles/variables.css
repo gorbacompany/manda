@@ -1,0 +1,57 @@
+/* ===========================
+   THEME: AMOLED TRUE BLACK
+   =========================== */
+/* Design System Variables */
+:root {
+  /* Colors */
+  --black-true: #000000;
+  --panel: #0a0a0a;
+  --chat-bg: #050505;
+  --muted: #9aa0a6;
+  --text: #e9eef8;
+  --accent: #6366f1;
+  --accent-weak: rgba(99, 102, 241, 0.18);
+  --glass-border: rgba(255, 255, 255, 0.03);
+  --accent-secondary: #7c84ff;
+
+  /* New variables for input tray buttons and input fields */
+  --input-field-bg: linear-gradient(180deg, #0b0b0b, #0a0a0a); /* New variable */
+  --button-icon-color: white; /* New variable for button icon color */
+  --button-size: 44px; /* Unified button size */
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 18px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-round: 50%;
+
+  /* Heights */
+  --input-min-height: 48px;
+  --input-max-height: 220px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Gradients */
+  --gradient-accent: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+  --gradient-dark-panel: linear-gradient(180deg, var(--panel), #070707);
+  --gradient-chat: linear-gradient(180deg, #0b0b0b, #0a0a0a);
+  --gradient-accent-weak: linear-gradient(160deg, rgba(99, 102, 241, 0.16), rgba(12, 12, 20, 0.88));
+  --gradient-primary: linear-gradient(135deg, var(--accent), #4b0082);
+
+  /* Elevations (shadows) */
+  --elevation-1: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --elevation-2: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --elevation-3: 0 8px 16px rgba(0, 0, 0, 0.6);
+}

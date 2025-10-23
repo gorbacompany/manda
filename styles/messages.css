@@ -1,0 +1,91 @@
+/* Messages */
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition-medium);
+}
+
+.msg--user {
+  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.msg--assistant {
+  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
+}
+
+.msg-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-weak);
+  flex-shrink: 0;
+}
+
+.msg-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.msg-timestamp {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.msg-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.msg-content pre {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 16px 0;
+  position: relative;
+}
+
+.msg-content code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85rem;
+}
+
+.msg-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Use global card action styles */
+.msg-actions .msg-action {
+  composes: card-action from './cards.css';
+}
+
+.msg-actions .msg-action svg {
+  fill: var(--button-icon-color) !important;
+  stroke: var(--button-icon-color) !important;
+}
+
+.msg-actions .msg-action:hover {
+  background: var(--accent-secondary) !important;
+  color: white !important;
+}

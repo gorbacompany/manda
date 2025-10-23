@@ -58,6 +58,47 @@ let metrics = {
     apiKeyCount: 0
 };
 
+// Función para inicializar el toggle del sidebar
+function initializeSidebarToggle() {
+    const toggleBtn = document.getElementById('chat-list-toggle');
+    const sidebar = document.getElementById('chat-list-sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    const body = document.body;
+
+    if (!toggleBtn || !sidebar) return;
+
+    // Función para toggle
+    function toggleSidebar() {
+        sidebar.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('active');
+        body.classList.toggle('sidebar-open');
+        
+        const isOpen = sidebar.classList.contains('open');
+        toggleBtn.setAttribute('aria-expanded', isOpen.toString());
+        
+        // Enfocar el primer elemento del sidebar cuando se abre
+        if (isOpen) {
+            const firstCard = document.querySelector('.nav-card');
+            if (firstCard) firstCard.focus();
+        }
+    }
+
+    // Evento click en botón
+    toggleBtn.addEventListener('click', toggleSidebar);
+
+    // Cerrar con overlay
+    if (overlay) {
+        overlay.addEventListener('click', toggleSidebar);
+    }
+
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+            toggleSidebar();
+        }
+    });
+}
+
 export function initializeSidebarNavigation() {
     navigationContainer = document.querySelector('.card-navigation-container');
     if (!navigationContainer) return;
@@ -73,6 +114,9 @@ export function initializeSidebarNavigation() {
     bindMetricListeners();
     updateCardMetrics();
     resetSidebarNavigation();
+    
+    // Inicializar el toggle del sidebar
+    initializeSidebarToggle();
 }
 
 export function resetSidebarNavigation() {

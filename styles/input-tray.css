@@ -1,0 +1,90 @@
+/*Input Tray Styles */
+.input-tray {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 20px calc(max(12px, env(safe-area-inset-bottom, 12px)) + var(--navigation-bar-height, 0px)) 20px;
+  background: none;
+  background-color: transparent;
+  border-top: none; /* Eliminado el borde superior */
+  position: fixed; /* Asegura que se fije en la parte inferior */
+  bottom: 0; /* Posición inicial en la parte inferior */
+  left: 0;
+  right: 0;
+  width: 100%; /* Ocupa todo el ancho */
+  box-sizing: border-box; /* Incluye padding y borde en el ancho/alto */
+  z-index: 1000; /* Asegura que esté por encima del contenido principal */
+}
+
+/* Estilo para cuando el teclado virtual está abierto */
+.keyboard-open .input-tray {
+  bottom: var(--keyboard-height); /* Mueve el input-tray hacia arriba por la altura del teclado */
+  transition: bottom 0.2s ease-out;
+}
+
+.input-controls {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.input-tray__textarea {
+  background: var(--input-field-bg);
+  border: none; /* Eliminado el borde */
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 14px 16px;
+  resize: none;
+  min-height: var(--input-min-height);
+  max-height: var(--input-max-height);
+  overflow-y: auto;
+  outline: none;
+  transition: all var(--transition-medium);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.input-tray__textarea:focus {
+  border-color: var(--accent);
+box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.attachment-preview {
+  background: transparent;
+  border: none; /* Eliminado el borde */
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .input-tray {
+    padding: 12px 16px calc(max(12px, env(safe-area-inset-bottom, 12px)) + var(--navigation-bar-height, 0px)) 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tray-btn {
+   border-radius: var(--radius-round);
+  }
+}
+
+@media (max-width: 480px) {
+  .input-tray {
+    padding: 8px 10px calc(max(8px, env(safe-area-inset-bottom, 8px)) + var(--navigation-bar-height, 0px)) 10px;
+  }
+
+  .input-tray__textarea {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .tray-btn {
+   border-radius: var(--radius-round);
+  }
+}

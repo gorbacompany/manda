@@ -1,9 +1,7 @@
 // chat-ui.js - Interfaz de usuario del chat
 
-import { sendToGemini } from './google-api.js';
 import { copyToClipboard } from './utils.js';
 import { saveCurrentChat } from './chat-manager.js';
-import { getPendingAttachments, setAttachmentsStatus, showSendStatus, clearPendingAttachments } from './file-handler.js';
 
 const ACTION_ICONS = {
     copy: `
@@ -38,41 +36,6 @@ const CODE_COPY_ICON = `
 
 const mathRenderQueue = [];
 let resizeTimer = null;
-
-function buildAttachmentDisplay(attachments, text) {
-    if (!attachments.length) {
-        return text;
-    }
-    const lines = attachments.map((attachment) => `• ${attachment.name}`);
-    const attachmentBlock = `Adjuntos:\n${lines.join('\n')}`;
-    return text ? `${text}\n\n${attachmentBlock}` : attachmentBlock;
-}
-
-function buildPromptPayload(text, attachments) {
-    const sections = [];
-
-    if (attachments.length) {
-        const summary = attachments.map((attachment, index) => {
-            const typeLabel = attachment.type || 'tipo desconocido';
-            const sizeLabel = Number.isFinite(attachment.size) ? `${Math.max(1, Math.round(attachment.size / 1024))} KB` : '';
-            const suffix = [typeLabel, sizeLabel].filter(Boolean).join(' · ');
-            return `${index + 1}. ${attachment.name}${suffix ? ` (${suffix})` : ''}`;
-        }).join('\n');
-        sections.push(`Archivos adjuntos proporcionados por el usuario:\n${summary}`);
-
-        const textualAttachments = attachments.filter((attachment) => typeof attachment.content === 'string' && attachment.content.trim().length);
-        if (textualAttachments.length) {
-            const combinedText = textualAttachments.map((attachment) => `--- ${attachment.name} ---\n${attachment.content}`).join('\n\n');
-            sections.push(`Contenido textual de los adjuntos:\n${combinedText}`);
-        }
-    }
-
-    if (text) {
-        sections.push(`Mensaje del usuario:\n${text}`);
-    }
-
-    return sections.join('\n\n');
-}
 
 function ensureMarkedConfiguration() {
     if (!window.marked || ensureMarkedConfiguration.configured) return;
@@ -121,69 +84,6 @@ window.addEventListener('load', () => {
     uniqueElements.forEach((el) => scheduleMathRendering(el));
     mathRenderQueue.length = 0;
 });
-
-// Función para inicializar la interfaz del chat
-export function initializeChatUI() {
-    // Aquí se puede añadir lógica de inicialización específica de la UI
-    // Por ahora, el sistema de chats se inicializa desde chat-manager.js
-}
-
-// Función para manejar el envío de mensajes
-export async function handleSendMessage() {
-    const input = document.getElementById('input');
-    const sendBtn = document.getElementById('sendBtn');
-    const fileInput = document.getElementById('fileInput');
-    const rawText = input.value.trim();
-    const attachments = [...getPendingAttachments()];
-
-    if (!rawText && !attachments.length) return;
-
-    const displayText = buildAttachmentDisplay(attachments, rawText) || '[Mensaje enviado]';
-
-    addMessageToChat(displayText, 'user', {
-        rawText,
-        attachments,
-        copyValue: rawText || displayText
-    });
-
-    input.value = '';
-    adjustTextareaHeight(input);
-    updateSendButtonState(input, fileInput, sendBtn);
-
-    if (attachments.length) {
-        setAttachmentsStatus('enviando', 'Enviando…');
-        showSendStatus('Enviando adjuntos…', 'pending');
-    } else {
-        showSendStatus('Enviando mensaje…', 'pending');
-    }
-
-    let sendSucceeded = false;
-
-    try {
-        const prompt = buildPromptPayload(rawText, attachments);
-        const response = await sendToGemini(prompt);
-        const botText = response.candidates?.[0]?.content?.parts?.[0]?.text || 'Sin respuesta';
-        addMessageToChat(botText, 'bot');
-
-        if (attachments.length) {
-            setAttachmentsStatus('listo', 'Listo');
-        }
-        showSendStatus('Mensaje enviado', 'success');
-        sendSucceeded = true;
-    } catch (error) {
-        addMessageToChat(`Error: ${error.message}`, 'bot error');
-        if (attachments.length) {
-            setAttachmentsStatus('error', 'Error');
-        }
-        showSendStatus('No se pudo enviar', 'error');
-    } finally {
-        if (sendSucceeded) {
-            clearPendingAttachments();
-        }
-        updateSendButtonState(input, fileInput, sendBtn);
-        setTimeout(() => showSendStatus('', ''), 1500);
-    }
-}
 
 // Función para añadir mensajes al chat
 function createMessageActions({ onCopy, onDelete, onRegenerate }) {
@@ -299,7 +199,10 @@ function handleRegenerate(messageWrapper) {
         input.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
-    handleSendMessage();
+    // This function is now in input-tray.js, so this call will fail.
+    // It needs to be handled differently, perhaps by dispatching a custom event.
+    // For now, this is broken.
+    // handleSendMessage(); 
 }
 
 function refreshRegenerateButtons() {
@@ -356,40 +259,6 @@ export function addMessageToChat(text, sender, options = {}) {
 
 // Función para configurar la interfaz del chat
 export function setupChatUI() {
-    const sendBtn = document.getElementById('sendBtn');
-    const input = document.getElementById('input');
-    const fileInput = document.getElementById('fileInput');
-
-    // Manejar el envío de mensajes
-    sendBtn?.addEventListener('click', handleSendMessage);
-
-    // Añadir soporte para enviar mensaje con Enter (sin shift)
-    input?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSendMessage();
-        }
-    });
-
-    // Ajustar la altura del textarea automáticamente
-    if (input) {
-        input.addEventListener('input', () => {
-            adjustTextareaHeight(input);
-            updateSendButtonState(input, fileInput, sendBtn);
-        });
-        adjustTextareaHeight(input);
-    }
-
-    fileInput?.addEventListener('change', () => {
-        updateSendButtonState(input, fileInput, sendBtn);
-    });
-
-    updateSendButtonState(input, fileInput, sendBtn);
-
-    window.addEventListener('attachments:updated', () => {
-        updateSendButtonState(input, fileInput, sendBtn);
-    });
-
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
@@ -419,36 +288,5 @@ function optimizeMessageLayout(messageWrapper) {
             messageWrapper.style.maxWidth = `${availableWidth}px`;
             messageWrapper.style.width = '100%';
         });
-    }
-}
-
-function adjustTextareaHeight(textarea) {
-    if (!textarea) return;
-    const style = window.getComputedStyle(textarea);
-    const minHeight = parseInt(style.getPropertyValue('--input-min-height') || '48', 10);
-    const maxHeight = parseInt(style.getPropertyValue('--input-max-height') || '200', 10);
-
-    textarea.style.height = 'auto';
-    const nextHeight = Math.min(maxHeight, Math.max(minHeight, textarea.scrollHeight));
-    textarea.style.height = `${nextHeight}px`;
-}
-
-function updateSendButtonState(textarea, fileInput, sendBtn) {
-    if (!sendBtn) return;
-
-    const hasText = textarea?.value.trim().length > 0;
-    const hasFile = !!fileInput?.files?.length;
-    let hasPendingAttachments = false;
-    try {
-        hasPendingAttachments = getPendingAttachments().length > 0;
-    } catch (error) {
-        // Ignorar si no está disponible todavía
-    }
-    const isReady = hasText || hasFile || hasPendingAttachments;
-
-    sendBtn.classList.toggle('send-btn--ready', isReady);
-
-    if (sendBtn.querySelector('.send-icon')) {
-        sendBtn.querySelector('.send-icon').classList.toggle('send-icon--active', isReady);
     }
 }

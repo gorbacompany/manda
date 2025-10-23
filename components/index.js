@@ -17,6 +17,7 @@ import { addMessageToChat, setupChatUI } from './chat-ui.js';
 import { initializeApiKeys, loadApiKeys } from './api-keys.js';
 import { initializeInfoPanels } from './floating-controls.js';
 import { initializeSidebarNavigation, resetSidebarNavigation } from './sidebar-navigation.js';
+import { setupInputTray } from '../scripts/input-tray.js';
 
 // Exportar funciones globales para que estén disponibles en toda la aplicación
 window.sendToGemini = sendToGemini;
@@ -40,6 +41,7 @@ window.setupChatUI = setupChatUI;
 window.loadApiKeys = loadApiKeys;
 window.initializeSidebarNavigation = initializeSidebarNavigation;
 window.resetSidebarNavigation = resetSidebarNavigation;
+window.setupInputTray = setupInputTray;
 
 // Configuración inicial cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', () => {
@@ -53,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupModals();
     initializeInfoPanels();
     initializeSidebarNavigation();
+    setupInputTray();
 
     console.log('✅ Aplicación inicializada correctamente');
 });
@@ -77,5 +80,6 @@ export {
     initializeInfoPanels,
     loadApiKeys,
     initializeSidebarNavigation,
-    resetSidebarNavigation
+    resetSidebarNavigation,
+    setupInputTray
 };

@@ -1,0 +1,125 @@
+/* Navigation Cards */
+.nav-card {
+  composes: card from './cards.css';
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--radius-round);
+  gap: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  min-width: 0;
+  outline: none;
+  position: relative;
+  padding: 18px;
+}
+
+.nav-card:hover,
+.nav-card:focus-visible,
+.nav-card.active {
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow:
+    0 16px 32px rgba(99, 102, 241, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-4px);
+  background: linear-gradient(160deg, rgba(24, 24, 36, 0.95), rgba(9, 9, 16, 0.9));
+}
+
+.nav-card-icon {
+  display: none;
+}
+
+.nav-card-content {
+  composes: card-body from './cards.css';
+  gap: 10px;
+  text-align: left;
+}
+
+.nav-card-title {
+  composes: card-title from './cards.css';
+  font-size: 1.05rem;
+  text-align: left;
+  letter-spacing: 0.02em;
+  margin-bottom: 0;
+}
+
+.nav-card-description {
+  margin: 0;
+  color: rgba(233, 238, 248, 0.72);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.nav-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav-card-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(99, 102, 241, 0.16);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: var(--text);
+  font-size: 0.86rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.nav-card-metric strong {
+  font-size: 1.1rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.nav-card-metric small {
+  font-size: 0.75rem;
+  color: rgba(233, 238, 248, 0.7);
+  letter-spacing: 0.02em;
+}
+
+.theme-metric {
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-metric-swatches {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.theme-metric-swatches .swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6366f1, #4b0082);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-metric-swatches .swatch.alt {
+  background: linear-gradient(135deg, rgba(26, 26, 44, 0.95), rgba(10, 10, 18, 0.95));
+}
+
+.back-button {
+  align-self: flex-start;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  font-weight: 600;
+}
+
+.back-button:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.22);
+  box-shadow: 0 10px 24px rgba(99, 102, 241, 0.2);
+}

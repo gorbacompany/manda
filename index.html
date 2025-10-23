@@ -3,8 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Manda Lite</title>
-  <link rel="stylesheet" href="components/style.css" />
+  <title>Manda</title>
+    <link rel="stylesheet" href="styles/variables.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <!-- Removido layout.css y components.css y añadidos los nuevos archivos CSS -->
+    <link rel="stylesheet" href="styles/panel-layout.css" />
+    <link rel="stylesheet" href="styles/sidebar-layout.css" />
+    <link rel="stylesheet" href="styles/sidebar-controls.css" />
+    <link rel="stylesheet" href="styles/model-cards.css" />
+    <link rel="stylesheet" href="styles/navigation-styles.css" />
+    <link rel="stylesheet" href="styles/nav-cards.css" />
+    <link rel="stylesheet" href="styles/chat-list.css" />
+    <link rel="stylesheet" href="styles/buttons.css" />
+    <link rel="stylesheet" href="styles/messages.css" />
+    <link rel="stylesheet" href="styles/floating-controls.css" />
+    <link rel="stylesheet" href="styles/api-cards.css" />
+    <link rel="stylesheet" href="styles/modal-styles.css" />
+    <link rel="stylesheet" href="styles/overlay.css" />
+    <link rel="stylesheet" href="styles/utilities.css" />
+    <link rel="stylesheet" href="styles/responsive.css" />
+    <link rel="stylesheet" href="styles/logo-button.css" />
+    <link rel="stylesheet" href="styles/input-tray.css" />
   <link rel="icon" href="components/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
@@ -13,73 +32,25 @@
   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/dist/highlight.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" defer></script>
-  
-  <!-- Solución para problemas de position:fixed en WebView -->
   <style>
-    /* Forzar visibilidad inicial del panel lateral */
-    #chat-list-sidebar {
-      display: none; /* Inicialmente oculto, script lo controla */
+    /* Ocultar barra de desplazamiento para todos los elementos en navegadores Webkit */
+    ::-webkit-scrollbar {
+      display: none;
     }
-    
-    /* Solución para problemas de teclado en WebView */
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
-    
-    /* Solución para problemas de posicionamiento en dispositivos con notch */
-    @supports (padding: max(0px)) {
-      .app-container {
-        padding-top: max(0px, env(safe-area-inset-top, 0px));
-        padding-right: max(0px, env(safe-area-inset-right, 0px));
-        padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
-        padding-left: max(0px, env(safe-area-inset-left, 0px));
-      }
-    }
-    
-    /* Forzar hardware acceleration para WebView en Android */
-    .chat-list-sidebar {
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-      -webkit-perspective: 1000;
-      perspective: 1000;
-    }
-    
-    /* Mejorar touch events en Android */
-    .panel-toggle, .sidebar-overlay {
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-    
-    /* Asegurar que el overlay cubra toda la pantalla en Android */
-    .sidebar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
+
+    /* Ocultar barra de desplazamiento para todos los elementos en Firefox, IE y Edge */
+    * {
+      scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none;  /* IE y Edge */
     }
   </style>
 </head>
 
 <body>
-  <!-- ÚNICO BOTÓN PARA ABRIR PANEL LATERAL -->
-  <div class="panel-toggle" id="chat-list-toggle" aria-label="Abrir panel lateral" role="button" tabindex="0">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M4 5h10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M4 12h16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M4 19h12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-
   <!-- OVERLAY PARA CERRAR SIDEBAR EN MÓVILES -->
   <div class="sidebar-overlay"></div>
 
-  <div class="app" role="application" aria-label="Manda Studio Lite">
+  <div class="app" role="application" aria-label="Manda Studio">
     <section class="chat-wrap" aria-live="polite">
       <main class="messages" id="messages" tabindex="0" aria-label="Mensajes"></main>
     </section>
@@ -87,26 +58,29 @@
     <!-- INPUT TRAY -->
     <div class="input-tray" role="region" aria-label="Escribir mensaje">
       <input type="file" id="fileInput" accept=".txt,.md,.pdf,.doc,.docx,image/*,audio/*,video/*" multiple aria-label="Seleccionar archivos" hidden />
-
-      <button class="tray-btn tray-btn--ghost attach-btn" id="attachBtn" title="Adjuntar" aria-label="Adjuntar archivo">
-        <svg class="tray-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M21 11V7a5 5 0 0 0-10 0v9a3 3 0 0 0 6 0v-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M7 8v9a5 5 0 0 0 10 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="sr-only">Adjuntar archivo</span>
-      </button>
-
-      <textarea id="input" class="input input-tray__textarea" placeholder="Escribe un mensaje..." rows="1" aria-label="Escribir mensaje"></textarea>
-
-      <button class="tray-btn tray-btn--primary send-btn" id="sendBtn" title="Enviar" aria-label="Enviar mensaje">
-        <svg class="tray-icon send-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path class="send-icon__body" d="M22 3 13.5 20.5l-2.2-7.1L4.2 11 22 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <path class="send-icon__tail" d="M11.5 13.5 22 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="sr-only">Enviar mensaje</span>
-      </button>
       <div id="attachmentPreview" class="attachment-preview" aria-live="polite"></div>
       <div id="sendStatus" class="send-status" role="status" aria-live="assertive"></div>
+
+      <div class="input-controls">
+        <button class="tray-btn tray-btn--ghost attach-btn" id="attachBtn" title="Adjuntar" aria-label="Adjuntar archivo">
+          <svg class="tray-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 22V13M12 13L15.5 16.5M12 13L8.5 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M20 17.6073C21.4937 17.0221 23 15.6889 23 13C23 9 19.6667 8 18 8C18 6 18 2 12 2C6 2 6 6 6 8C4.33333 8 1 9 1 13C1 15.6889 2.50628 17.0221 4 17.6073" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="sr-only">Adjuntar archivo</span>
+        </button>
+
+        <textarea id="input" class="input-tray__textarea" placeholder="Escribe un mensaje..." rows="1" aria-label="Escribir mensaje"></textarea>
+
+        <button class="tray-btn tray-btn--primary send-btn" id="sendBtn" title="Enviar" aria-label="Enviar mensaje">
+          <svg class="tray-icon send-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.00003 14.9968C5.41424 14.9968 5.75003 15.3326 5.75003 15.7468V18C5.75003 18.1381 5.86196 18.25 6.00003 18.25H18C18.1381 18.25 18.25 18.1381 18.25 18V15.7468C18.25 15.3326 18.5858 14.9968 19 14.9968C19.4142 14.9968 19.75 15.3326 19.75 15.7468V18C19.75 18.9665 18.9665 19.75 18 19.75H6.00003C5.03353 19.75 4.25003 18.9665 4.25003 18V15.7468C4.25003 15.3326 4.58582 14.9968 5.00003 14.9968Z" fill="white"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.2023 5.58088C12.6165 5.58088 12.9523 5.91667 12.9523 6.33088V14.4165C12.9523 14.8307 12.6165 15.1665 12.2023 15.1665C11.7881 15.1665 11.4523 14.8307 11.4523 14.4165V6.33088C11.4523 5.91667 11.7881 5.58088 12.2023 5.58088Z" fill="white"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.678 4.46356C11.9694 4.17885 12.4348 4.17885 12.7262 4.46356L16.0701 7.73038C16.3663 8.01984 16.3719 8.49468 16.0824 8.79097C15.7929 9.08725 15.3181 9.09278 15.0218 8.80332L12.2021 6.04855L9.38239 8.80332C9.08611 9.09278 8.61127 9.08725 8.32181 8.79097C8.03234 8.49468 8.03787 8.01984 8.33416 7.73038L11.678 4.46356Z" fill="white"/>
+          </svg>
+          <span class="sr-only">Enviar mensaje</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -114,7 +88,7 @@
   <aside id="chat-list-sidebar" class="chat-list-sidebar" aria-hidden="true">
     <div class="sidebar-shell">
       <div class="sidebar-top-bar">
-        <h2 class="sidebar-title">Manda Lite</h2>
+        <h3 class="sidebar-title">Manda Studio</h3>
       </div>
 
       <div class="card-navigation-container" data-active-panel="A">
@@ -186,8 +160,8 @@
 
               <div class="info-panel">
                 <h4>Créditos</h4>
-                <p>Desarrollado por Manda Studio</p>
-                <p>Version 1.19</p>
+                <p>Desarrollado por Raen Studio</p>
+                <p>Version 0.30 Divider</p>
                 <p>2025-10-20</p>
               </div>
               
@@ -214,65 +188,17 @@
     </div>
   </div>
 
+  <!-- FLOATING LOGO BUTTON -->
+  <button id="logo-btn" class="floating-btn" aria-label="Logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19.4 15C19.2655 15.2856 19.2655 15.7144 19.4 16C19.5345 16.2856 19.7345 16.7144 19.6 17L19.4 15ZM19.6 17C19.4655 17.2856 19.2655 17.7144 19.4 18C19.5345 18.2856 19.7345 18.7144 19.6 19L19.6 17ZM19.6 19C19.4655 19.2856 19.2655 19.7144 19.4 20C19.5345 20.2856 19.7345 20.7144 19.6 21L19.6 19ZM19.6 21C19.4655 21.2856 19.2655 21.7144 19.4 22C19.5345 22.2856 19.7345 22.7144 19.6 23L19.6 21ZM4.6 15L4.4 17L4.6 15ZM4.4 17L4.6 19L4.4 17ZM4.6 19L4.4 21L4.6 19ZM4.4 21L4.6 23L4.4 21ZM12 2V4M16.95 4.55L15.535 5.965M20 12H22M16.95 19.45L15.535 18.035M12 20V22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
   <script src="components/index.js" type="module" defer></script>
   <script src="components/sidebar-navigation.js" type="module" defer></script>
-  
-  <!-- Solución para forzar visibilidad del panel lateral -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const toggleBtn = document.getElementById('chat-list-toggle');
-      const sidebar = document.getElementById('chat-list-sidebar');
-      const overlay = document.querySelector('.sidebar-overlay');
-
-      // Función simple para toggle
-      function toggleSidebar() {
-        if (sidebar.style.display === 'block') {
-          sidebar.style.display = 'none';
-          if (overlay) overlay.style.display = 'none';
-          toggleBtn.setAttribute('aria-expanded', 'false');
-          // Remover focus para evitar issues con teclado en Android
-          document.body.focus();
-        } else {
-          sidebar.style.display = 'block';
-          if (overlay) overlay.style.display = 'block';
-          toggleBtn.setAttribute('aria-expanded', 'true');
-        }
-      }
-
-      // Evento click en botón
-      toggleBtn.addEventListener('click', toggleSidebar);
-
-      // Cerrar con overlay
-      if (overlay) {
-        overlay.addEventListener('click', toggleSidebar);
-      }
-
-      // Manejar focus en Android para evitar problemas con teclado
-      document.addEventListener('focusin', function(e) {
-        if (e.target.closest('#chat-list-sidebar')) {
-          // Si focus está en sidebar, cerrar al perder focus
-          setTimeout(() => {
-            if (!document.activeElement.closest('#chat-list-sidebar')) {
-              toggleSidebar();
-            }
-          }, 100);
-        }
-      });
-
-      // Inicializar cerrado (ya manejado por CSS, pero asegurar)
-      sidebar.style.display = 'none';
-      if (overlay) overlay.style.display = 'none';
-      toggleBtn.setAttribute('aria-expanded', 'false');
-
-      // Añadir meta viewport si no existe (para móviles)
-      let viewportMeta = document.querySelector('meta[name="viewport"]');
-      if (!viewportMeta) {
-        viewportMeta = document.createElement('meta');
-        viewportMeta.name = "viewport";
-        viewportMeta.content = "width=device-width, initial-scale=1, viewport-fit=cover";
-        document.head.appendChild(viewportMeta);
-      }
-    });
-  </script>
+  <script src="scripts/logo-button.js" type="module" defer></script>
+  <script src="scripts/input-tray.js" type="module" defer></script>
 </body>
 </html>

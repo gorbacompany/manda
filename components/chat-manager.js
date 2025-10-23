@@ -5,6 +5,7 @@ import { addMessageToChat } from './chat-ui.js';
 import { showCustomConfirm, showCustomPrompt } from './ui-modals.js';
 import { showNotification } from './utils.js';
 import { resetSidebarNavigation } from './sidebar-navigation.js';
+import { downloadFile } from './file-downloader.js'; // Importar el nuevo módulo
 
 let chatListSidebarElement = null;
 let sidebarOverlayElement = null;
@@ -147,26 +148,28 @@ function buildChatMarkdown(chat) {
 
 function downloadChatMarkdown(chatId) {
     const chatData = localStorage.getItem(`chat_${chatId}`);
-    if (!chatData) return false;
+    if (!chatData) {
+        showNotification('No se encontraron datos del chat', 'error');
+        return false;
+    }
 
     try {
         const chat = JSON.parse(chatData);
-        const markdown = buildChatMarkdown(chat);
+        const markdownContent = buildChatMarkdown(chat);
         const fileName = `${sanitizeFileName(chat.title)}.md`;
-        const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        showNotification('Chat descargado en Markdown', 'success');
-        return true;
+
+        // Usar el nuevo módulo de descarga
+        const success = downloadFile(fileName, markdownContent, 'text/markdown;charset=utf-8');
+
+        if (success) {
+            showNotification('Chat descargado en Markdown', 'success');
+        } else {
+            showNotification('No se pudo descargar el chat', 'error');
+        }
+        return success;
     } catch (error) {
-        console.error('Error al descargar chat:', error);
-        showNotification('No se pudo descargar el chat', 'error');
+        console.error('Error al procesar el chat para la descarga:', error);
+        showNotification('Error al procesar el chat', 'error');
         return false;
     }
 }
@@ -402,12 +405,12 @@ function updateOverlayState() {
     }
 }
 
-// Función para renderizar la lista de chats
+// Función para renderizar la lista de chats (versión mejorada)
 function renderChatList() {
     const { chatList, currentChatId } = updateChatList();
     const chatListContainer = document.getElementById('chat-list-container');
-    const sidebarElement = chatListSidebarElement ?? document.getElementById('chat-list-sidebar');
-    if (!chatListContainer || !sidebarElement) return;
+    if (!chatListContainer) return;
+
     chatListContainer.innerHTML = '';
 
     if (chatList.length === 0) {
@@ -419,137 +422,91 @@ function renderChatList() {
     }
 
     chatList.forEach(chat => {
-        const chatItem = document.createElement('div');
         const isActive = chat.id === currentChatId;
         const isSelected = selectedChatIds.has(chat.id);
+
+        // Contenedor principal del item
+        const chatItem = document.createElement('div');
         chatItem.className = `chat-list-item${isActive ? ' active' : ''}${isSelected ? ' selected' : ''}`;
         chatItem.dataset.chatId = chat.id;
-
-        const titleContainer = document.createElement('div');
-        titleContainer.className = 'chat-title-container';
-
-        const title = document.createElement('div');
-        title.className = 'chat-title';
-        title.textContent = chat.title;
-
-        const selectionCheckbox = document.createElement('input');
-        selectionCheckbox.type = 'checkbox';
-        selectionCheckbox.className = 'chat-select-checkbox';
-        selectionCheckbox.checked = isSelected;
-        selectionCheckbox.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-        selectionCheckbox.addEventListener('change', (e) => {
-            toggleChatSelection(chat.id, e.target.checked);
-            chatItem.classList.toggle('selected', e.target.checked);
-        });
-
-        const controlsContainer = document.createElement('div');
-        controlsContainer.className = 'chat-controls';
-
-        // Botón de copiar
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'chat-control-btn chat-copy-btn';
-        copyBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M15 3H6a2 2 0 0 0-2 2v11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M9 7h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="sr-only">Copiar chat</span>
-        `;
-        copyBtn.dataset.chatId = chat.id;
-        copyBtn.title = 'Copiar chat';
-        copyBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            copyChatContent(chat.id);
-        });
-
-        // Botón de descargar
-        const downloadBtn = document.createElement('button');
-        downloadBtn.className = 'chat-control-btn chat-download-btn';
-        downloadBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 3v12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M7 11l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M5 19h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="sr-only">Descargar chat</span>
-        `;
-        downloadBtn.dataset.chatId = chat.id;
-        downloadBtn.title = 'Descargar chat en Markdown';
-        downloadBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            downloadChatMarkdown(chat.id);
-        });
-
-        // Botón de renombrar
-        const renameBtn = document.createElement('button');
-        renameBtn.className = 'chat-control-btn chat-rename-btn';
-        renameBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M16.862 3.487 20.513 7.14a1.5 1.5 0 0 1 0 2.121L10.05 19.724l-4.121.707.707-4.122 10.463-10.464a1.5 1.5 0 0 1 2.121 0Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M14.389 5.96 18.04 9.61" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="sr-only">Renombrar chat</span>
-        `;
-        renameBtn.dataset.chatId = chat.id;
-        renameBtn.title = 'Renombrar chat';
-        renameBtn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const newTitle = await showCustomPrompt('Renombrar chat', chat.title || '');
-            if (typeof newTitle === 'string' && newTitle.trim()) {
-                renameChat(chat.id, newTitle.trim());
-                renderChatList();
-                showNotification('Título actualizado', 'success');
-            }
-        });
-
-        // Botón de borrar
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'chat-control-btn chat-delete-btn';
-        deleteBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M5 7h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M10 11v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M14 11v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-                <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="sr-only">Eliminar chat</span>
-        `;
-        deleteBtn.dataset.chatId = chat.id;
-        deleteBtn.title = 'Eliminar chat';
-        deleteBtn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const result = await showCustomConfirm('¿Eliminar este chat?');
-            if (result) {
-                deleteChat(chat.id);
-                renderChatList();
-            }
-        });
-
-        controlsContainer.appendChild(copyBtn);
-        controlsContainer.appendChild(downloadBtn);
-        controlsContainer.appendChild(renameBtn);
-        controlsContainer.appendChild(deleteBtn);
-        titleContainer.appendChild(selectionCheckbox);
-        titleContainer.appendChild(title);
-        titleContainer.appendChild(controlsContainer);
-
-        const meta = document.createElement('div');
-        meta.className = 'chat-meta';
-        meta.textContent = `${chat.messageCount} mensajes • ${formatDate(chat.timestamp)}`;
-
-        chatItem.appendChild(titleContainer);
-        chatItem.appendChild(meta);
-
-        // Evento click para cargar chat
         chatItem.addEventListener('click', () => {
             clearChatSelection();
             loadChat(chat.id);
             closeSidebar();
             renderChatList();
         });
+
+        // Checkbox de selección
+        const selectionCheckbox = document.createElement('input');
+        selectionCheckbox.type = 'checkbox';
+        selectionCheckbox.className = 'chat-select-checkbox';
+        selectionCheckbox.checked = isSelected;
+        selectionCheckbox.addEventListener('click', e => e.stopPropagation());
+        selectionCheckbox.addEventListener('change', e => {
+            toggleChatSelection(chat.id, e.target.checked);
+            chatItem.classList.toggle('selected', e.target.checked);
+        });
+
+        // Contenedor para el contenido principal (título, meta, controles)
+        const contentContainer = document.createElement('div');
+        contentContainer.className = 'chat-item-content';
+
+        // Cabecera con título y controles
+        const headerContainer = document.createElement('div');
+        headerContainer.className = 'chat-item-header';
+
+        const title = document.createElement('div');
+        title.className = 'chat-title';
+        title.textContent = chat.title || 'Chat sin título';
+
+        const controlsContainer = document.createElement('div');
+        controlsContainer.className = 'chat-controls';
+
+        // Botones de acción
+        const actions = [
+            { name: 'Copiar', class: 'chat-copy-btn', handler: copyChatContent, svg: '<path d="M15 3H6a2 2 0 0 0-2 2v11" stroke="currentColor" stroke-width="1.4" /><path d="M9 7h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" />' },
+            { name: 'Descargar', class: 'chat-download-btn', handler: downloadChatMarkdown, svg: '<path d="M12 3v12" /><path d="M7 11l5 5 5-5" /><path d="M5 19h14" />' },
+            { name: 'Renombrar', class: 'chat-rename-btn', handler: async () => {
+                const newTitle = await showCustomPrompt('Renombrar chat', chat.title || '');
+                if (typeof newTitle === 'string' && newTitle.trim()) {
+                    renameChat(chat.id, newTitle.trim());
+                    renderChatList();
+                    showNotification('Título actualizado', 'success');
+                }
+            }, svg: '<path d="M16.862 3.487 20.513 7.14a1.5 1.5 0 0 1 0 2.121L10.05 19.724l-4.121.707.707-4.122 10.463-10.464a1.5 1.5 0 0 1 2.121 0Z" /><path d="M14.389 5.96 18.04 9.61" />' },
+            { name: 'Eliminar', class: 'chat-delete-btn', handler: async () => {
+                const result = await showCustomConfirm('¿Eliminar este chat?');
+                if (result) {
+                    deleteChat(chat.id);
+                    renderChatList();
+                }
+            }, svg: '<path d="M5 7h14" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" />' }
+        ];
+
+        actions.forEach(action => {
+            const btn = document.createElement('button');
+            btn.className = `chat-control-btn ${action.class}`;
+            btn.title = action.name;
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${action.svg}</svg><span class="sr-only">${action.name}</span>`;
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                action.handler(chat.id);
+            });
+            controlsContainer.appendChild(btn);
+        });
+
+        // Meta información (fecha, etc.)
+        const meta = document.createElement('div');
+        meta.className = 'chat-meta';
+        meta.textContent = `${chat.messageCount} mensajes • ${formatDate(chat.timestamp)}`;
+
+        // Ensamblar todo
+        headerContainer.appendChild(title);
+        headerContainer.appendChild(controlsContainer);
+        contentContainer.appendChild(headerContainer);
+        contentContainer.appendChild(meta);
+        chatItem.appendChild(selectionCheckbox);
+        chatItem.appendChild(contentContainer);
 
         chatListContainer.appendChild(chatItem);
     });

@@ -1,0 +1,55 @@
+/* Panel de Wikipedia */
+#wikipedia-panel {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  width: 90%;
+  max-width: 500px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 1000;
+  padding: 15px;
+}
+
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#wikipedia-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: var(--input-field-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+
+.results-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.result-item {
+  padding: 10px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.result-item h3 {
+  margin: 0 0 5px 0;
+  color: var(--accent);
+}
+
+.result-item p {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.result-item a {
+  color: var(--accent-secondary);
+  font-size: 0.8em;
+  display: block;
+  margin-top: 5px;
+}
