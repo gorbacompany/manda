@@ -1,0 +1,389 @@
+/* ===========================
+   AMOLED SIDEBAR STYLES
+   =========================== */
+
+/* Chat list sidebar - AMOLED theme */
+.chat-list-sidebar {
+  background: var(--gradient-dark-panel) !important;
+  border-right: 1px solid var(--glass-border) !important;
+  box-shadow: var(--elevation-3) !important;
+  padding-top: 0 !important; /* Eliminar padding superior innecesario */
+}
+
+.sidebar-top-bar {
+  background: rgba(10, 10, 10, 0.92) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  padding: 16px !important; /* Reducir padding */
+  min-height: auto !important;
+}
+
+.sidebar-title {
+  color: #1e1b4b !important;
+  font-size: 1.1rem !important;
+  margin: 0 !important;
+}
+
+.panel-title {
+  color: #1e1b4b;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.nav-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  background: rgba(10, 10, 10, 0.5);
+}
+
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0; /* Reducir padding vertical */
+}
+
+/* Model cards optimization for better space usage */
+.model-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px; /* Reducir gap entre tarjetas */
+  padding: 0 12px; /* Reducir padding lateral */
+}
+
+.model-card {
+  background: linear-gradient(180deg, rgba(13, 13, 13, 0.95), rgba(10, 10, 10, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 12px; /* Reducir padding interno */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  text-align: left;
+}
+
+.model-card:hover {
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0.08), rgba(13, 13, 13, 0.95));
+  border-color: rgba(30, 27, 75, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(30, 27, 75, 0.12);
+}
+
+.model-card-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  padding-bottom: 6px; /* Reducir padding */
+  margin-bottom: 8px; /* Reducir margen */
+}
+
+.model-card-title {
+  color: #e9eef8;
+  font-weight: 600;
+  font-size: 0.95rem; /* Reducir tamaño */
+}
+
+.model-card-subtitle {
+  color: #9aa0a6;
+  font-size: 0.75rem; /* Reducir tamaño */
+  margin-top: 2px;
+}
+
+.model-card-body p {
+  color: #9aa0a6;
+  font-size: 0.8rem; /* Reducir tamaño */
+  line-height: 1.3;
+  margin: 8px 0; /* Reducir margen */
+}
+
+.model-card-meta {
+  color: #9aa0a6;
+  font-size: 0.7rem; /* Reducir tamaño */
+  margin-top: 6px; /* Reducir margen */
+}
+
+/* Main navigation cards optimization - SCROLLABLE GRID */
+.card-grid,
+.nav-card-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column for better visibility */
+  gap: 8px; /* Reduced gap */
+  padding: 8px; /* Reduced padding */
+  max-width: 100%;
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal overflow */
+  max-height: calc(100vh - 200px); /* Scrollable height */
+  scrollbar-width: thin; /* Firefox scrollbar */
+}
+
+.nav-card-grid {
+  padding: 4px; /* Minimal padding for maximum space */
+  gap: 6px; /* Compact spacing */
+  height: auto; /* Auto height for scrolling */
+  max-height: calc(100vh - 180px); /* Proper scrollable height */
+}
+
+.nav-card-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nav-card-grid::-webkit-scrollbar-thumb {
+  background: rgba(30, 27, 75, 0.3);
+  border-radius: 3px;
+}
+
+.nav-card-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 27, 75, 0.5);
+}
+
+.nav-card-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Ensure cards are fully visible */
+.model-card {
+  min-height: auto; /* Allow natural height */
+  overflow: visible; /* No clipping */
+  margin: 0; /* Remove any margins */
+}
+
+.chat-list-container {
+  overflow-y: auto !important; /* Scroll funcional sin barras visibles */
+  max-height: calc(100vh - 180px) !important;
+  padding: 0 12px !important;
+  /* Las barras están ocultas globalmente por la ley de diseño en index.html */
+  position: relative;
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.95), rgba(13, 13, 13, 0.9)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 20px rgba(0, 0, 0, 0.35) !important;
+  /* 🔥 RESPETA LEY GLOBAL - SIN BARRAS VISIBLES 🔥 */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.chat-list-container::-webkit-scrollbar {
+  display: none !important;
+}
+
+.chat-list-item:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0.12), rgba(26, 26, 26, 0.95)) !important;
+  box-shadow:
+    0 12px 28px rgba(30, 27, 75, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(30, 27, 75, 0.3) !important;
+}
+
+.chat-list-item.active {
+  border-left: 3px solid #1e1b4b !important;
+  padding-left: 9px;
+  background: linear-gradient(120deg, rgba(30, 27, 75, 0.15), rgba(13, 13, 13, 0.9)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(30, 27, 75, 0.18) !important;
+}
+
+.chat-list-item.selected {
+  border-color: rgba(30, 27, 75, 0.4) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(30, 27, 75, 0.4),
+    0 12px 26px rgba(30, 27, 75, 0.22) !important;
+}
+
+.chat-select-checkbox {
+  margin-top: 4px;
+  accent-color: #1e1b4b !important;
+}
+
+.chat-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text) !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
+.chat-list-item.active .chat-title {
+  color: #1e1b4b !important;
+}
+
+.chat-controls {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.chat-control-btn {
+  background: none;
+  border: none;
+  color: rgba(233, 238, 248, 0.8) !important; /* Más visible que --muted */
+  opacity: 0.8; /* Más visible que el original 0.6 */
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.chat-control-btn:hover {
+  color: #1e1b4b !important;
+  background: rgba(30, 27, 75, 0.16) !important;
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.chat-control-btn:active {
+  transform: scale(0.95);
+  background: rgba(30, 27, 75, 0.25) !important;
+}
+
+.chat-meta {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Chat list empty state */
+.chat-list-empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 40px 20px;
+  font-style: italic;
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.95), rgba(13, 13, 13, 0.9));
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 10px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .chat-list-header {
+    padding: 10px 12px;
+  }
+
+  .chat-list-item .chat-title {
+    font-size: 0.8rem;
+  }
+
+  .chat-list-item .chat-meta {
+    font-size: 0.65rem;
+  }
+}
+
+.chat-list-sidebar * {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  pointer-events: auto;
+}
+
+/* Sidebar responsive fixes */
+@media (max-aspect-ratio: 1/1) and (orientation: portrait) {
+  .chat-list-sidebar {
+    width: min(80vw, 380px) !important;
+    max-width: min(80vw, 380px) !important;
+    max-height: 90vh !important;
+  }
+
+  .chat-list-container {
+    max-height: calc(90vh - 100px) !important;
+  }
+}
+
+@media (max-aspect-ratio: 3/5) {
+  .chat-list-sidebar {
+    width: min(75vw, 320px) !important;
+    max-width: min(75vw, 320px) !important;
+    max-height: 85vh !important;
+  }
+
+  .chat-list-container {
+    max-height: calc(85vh - 100px) !important;
+  }
+}
+
+.chat-list-sidebar.open {
+  transform: translateX(0) !important;
+}
+
+/* Landscape mode optimization - MAXIMIZAR ESPACIO PARA TARJETAS */
+@media (orientation: landscape) and (max-height: 600px) {
+  .chat-list-sidebar {
+    width: min(45vw, 400px) !important; /* Más ancho para landscape */
+    max-width: min(45vw, 400px) !important;
+    max-height: 95vh !important;
+  }
+
+  .sidebar-top-bar {
+    padding: 8px 16px !important; /* Padding más compacto */
+  }
+
+  .sidebar-title {
+    font-size: 1rem !important;
+  }
+
+  .panel-body {
+    padding: 4px 0 !important; /* Padding mínimo */
+  }
+
+  .model-cards {
+    padding: 0 8px !important; /* Padding mínimo */
+    gap: 6px !important;
+  }
+
+  .model-card {
+    padding: 8px !important; /* Padding más compacto */
+  }
+
+  .model-card-title {
+    font-size: 0.85rem !important;
+  }
+
+  .model-card-subtitle {
+    font-size: 0.7rem !important;
+  }
+
+  .model-card-body p {
+    font-size: 0.75rem !important;
+    margin: 4px 0 !important;
+  }
+
+  .model-card-meta {
+    font-size: 0.65rem !important;
+    margin-top: 4px !important;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 768px) {
+  .chat-list-sidebar {
+    width: min(40vw, 450px) !important; /* Ancho optimizado */
+    max-width: min(40vw, 450px) !important;
+  }
+}
+
+/* Optimizar para pantallas muy anchas en landscape */
+@media (orientation: landscape) and (min-width: 1024px) {
+  .chat-list-sidebar {
+    width: min(35vw, 400px) !important;
+    max-width: min(35vw, 400px) !important;
+  }
+}

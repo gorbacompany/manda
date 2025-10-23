@@ -27,8 +27,38 @@
   transform-style: preserve-3d;
 }
 
+/* Ensure sidebar is fully visible when open */
 .chat-list-sidebar.open {
+  width: min(85vw, 420px);
+  max-width: min(85vw, 420px);
   transform: translateX(0);
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Fallback for different screen ratios */
+@media (max-aspect-ratio: 1/1) {
+  .chat-list-sidebar {
+    width: min(80vw, 380px);
+    max-width: min(80vw, 380px);
+  }
+
+  .chat-list-sidebar.open {
+    width: min(80vw, 380px);
+    max-width: min(80vw, 380px);
+  }
+}
+
+@media (max-aspect-ratio: 2/3) {
+  .chat-list-sidebar {
+    width: min(75vw, 350px);
+    max-width: min(75vw, 350px);
+  }
+
+  .chat-list-sidebar.open {
+    width: min(75vw, 350px);
+    max-width: min(75vw, 350px);
+  }
 }
 
 @supports (backdrop-filter: blur(10px)) {
@@ -211,16 +241,17 @@ html, body {
   background: rgba(99, 102, 241, 0.5);
 }
 
-@media (orientation: landscape) and (min-width: 768px) {
+/* Better responsive handling - removed the problematic max-aspect-ratio rule */
+@media (orientation: portrait) and (max-height: 1000px) {
   .chat-list-sidebar {
-    width: 585px; /* Mismo ancho que en orientación vertical para consistencia */
+    width: min(85vw, 420px);
+    max-width: min(85vw, 420px);
   }
 }
 
-/* Regla para cuando el alto de la ventana es 1.5 veces el ancho */
-@media (max-aspect-ratio: 2/3) {
+@media (orientation: landscape) and (min-width: 768px) {
   .chat-list-sidebar {
-    width: 100vw;
-    max-width: 100vw;
+    width: min(55vw, 550px);
+    max-width: min(55vw, 550px);
   }
 }

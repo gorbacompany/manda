@@ -1,9 +1,10 @@
 /*Responsive */
 
-/* Tablet and larger mobile devices */
-@media (max-width: 1024px) {
+/* Tablet and larger mobile devices - only apply when not in portrait with specific conditions */
+@media (max-width: 1024px) and (orientation: landscape) {
   .chat-list-sidebar {
-    width: 280px;
+    width: min(60vw, 480px);
+    max-width: min(60vw, 480px);
   }
 
   .chat-list-container {
@@ -19,16 +20,14 @@
     padding: 10px 16px;
     margin-bottom: 12px;
   }
-
-.messages {
-    padding: 16px 16px 0;
-  }
 }
 
-/* Mobile devices */
-@media (max-width: 768px) {
-  /* On smaller screens, the content area will be very narrow */
-  /* but the sidebar remains visible as requested. */
+/* Mobile devices in landscape - special handling */
+@media (max-width: 768px) and (orientation: landscape) {
+  .chat-list-sidebar {
+    width: min(55vw, 400px);
+    max-width: min(55vw, 400px);
+  }
 
   .floating-controls {
     top: max(10px, env(safe-area-inset-top, 10px));
@@ -44,7 +43,7 @@
 
   .modal-content {
     width: 95%;
-}
+  }
 
   .card-grid {
     grid-template-columns: 1fr;

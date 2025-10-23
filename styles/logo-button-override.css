@@ -1,0 +1,53 @@
+/* LOGO BUTTON OVERRIDE - LOADED LAST FOR MAXIMUM PRIORITY */
+#logo-btn {
+  position: fixed !important;
+  top: 10px !important;
+  left: 10px !important;
+  z-index: 999999 !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  background: linear-gradient(135deg, #1e1b4b, #312e81) !important;
+  box-shadow:
+    inset 1px 1px 2px rgba(255, 255, 255, 0.1),
+    inset -1px -1px 2px rgba(0, 0, 0, 0.3),
+    0 6px 20px rgba(30, 27, 75, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: #fff !important;
+  backdrop-filter: blur(4px) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+
+#logo-btn:hover {
+  transform: translateY(-3px) scale(1.08) !important;
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.15),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.4),
+    0 12px 32px rgba(30, 27, 75, 0.35) !important;
+}
+
+#logo-btn svg {
+  width: 24px !important;
+  height: 24px !important;
+  transition: all 0.2s ease !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3)) !important;
+}
+
+#logo-btn:hover svg {
+  transform: scale(1.1) !important;
+  filter: drop-shadow(0 2px 4px rgba(30, 27, 75, 0.3)) !important;
+}
+
+/* Enhanced focus state for accessibility */
+#logo-btn:focus {
+  outline: 2px solid rgba(30, 27, 75, 0.6) !important;
+  outline-offset: 3px !important;
+}
