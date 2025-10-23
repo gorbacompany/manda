@@ -7,11 +7,9 @@
   width: 585px; /* 25% más ancho */
   max-width: calc(100vw - 40px);
   height: calc(100vh - var(--status-bar-height, 0px)); /* Ocupa la altura restante */
-  background: linear-gradient(180deg, var(--panel), #050505);
-  border-right: 1px solid var(--glass-border);
-  box-shadow:
-    inset 1px 1px 2px rgba(255, 255, 255, 0.02),
-    2px 0 18px rgba(0, 0, 0, 0.85);
+  background: linear-gradient(180deg, rgba(50, 54, 71, 0.98), rgba(38, 42, 58, 0.98));
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 22px 48px rgba(14, 16, 24, 0.6);
   z-index: 1400;
   backdrop-filter: blur(10px);
   display: flex;
@@ -50,8 +48,8 @@
   align-items: center;
   justify-content: flex-end;
   padding: calc(22px + var(--status-bar-height, 0px)) 22px 18px; /* Ajuste para la barra de estado */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: var(--panel); /* Fondo opaco para cubrir el área de la barra de estado */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(62, 67, 86, 0.92); /* Fondo opaco para cubrir el área de la barra de estado */
 }
 
 .sidebar-title {
@@ -113,16 +111,16 @@
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  border: 1px solid var(--glass-border);
+  background: linear-gradient(180deg, rgba(74, 79, 97, 0.92), rgba(55, 59, 76, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   cursor: pointer;
   transition: all var(--transition-medium);
 }
 
 .chat-list-item:hover {
-  background: linear-gradient(180deg, #0f0f0f, #0c0c0c);
-  border-color: rgba(99, 102, 241, 0.3);
+  background: linear-gradient(180deg, rgba(91, 59, 227, 0.28), rgba(74, 79, 97, 0.95));
+  border-color: rgba(138, 99, 255, 0.45);
   transform: translateY(-1px);
 }
 

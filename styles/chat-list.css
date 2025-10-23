@@ -14,36 +14,36 @@
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  border: 1px solid var(--glass-border);
+  background: linear-gradient(180deg, rgba(74, 79, 97, 0.9), rgba(55, 59, 76, 0.88));
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
-    inset 1px 1px 2px rgba(255, 255, 255, 0.02),
-    0 2px 8px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 20px rgba(18, 20, 30, 0.35);
 }
 
 .chat-list-item:hover {
   transform: translateY(-2px);
-  background: linear-gradient(180deg, #0d0d0d, #0c0c0c);
+  background: linear-gradient(180deg, rgba(91, 59, 227, 0.32), rgba(65, 70, 88, 0.95));
   box-shadow:
-    0 4px 16px rgba(99, 102, 241, 0.08),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.02);
-  border-color: rgba(99, 102, 241, 0.12);
+    0 12px 28px rgba(91, 59, 227, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: rgba(138, 99, 255, 0.35);
 }
 
 .chat-list-item.active {
   border-left: 3px solid var(--accent);
   padding-left: 9px; /* Compensar el borde */
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.06), transparent);
+  background: linear-gradient(120deg, rgba(91, 59, 227, 0.28), rgba(55, 59, 76, 0.0));
   box-shadow:
-    inset 1px 1px 2px rgba(255, 255, 255, 0.02),
-    0 2px 8px rgba(99, 102, 241, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(91, 59, 227, 0.18);
 }
 
 .chat-list-item.selected {
-  border-color: rgba(99, 102, 241, 0.35);
+  border-color: rgba(138, 99, 255, 0.45);
   box-shadow:
-    inset 0 0 0 1px rgba(99, 102, 241, 0.35),
-    0 4px 14px rgba(99, 102, 241, 0.18);
+    inset 0 0 0 1px rgba(138, 99, 255, 0.5),
+    0 12px 26px rgba(91, 59, 227, 0.22);
 }
 
 .chat-select-checkbox {
@@ -102,7 +102,7 @@
 
 .chat-control-btn:hover {
   color: var(--accent);
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(91, 59, 227, 0.16);
   transform: scale(1.1);
   opacity: 1; /* Opacidad completa al pasar el ratón */
 }
@@ -118,9 +118,9 @@
   text-align: center;
   padding: 40px 20px;
   font-style: italic;
-  background: linear-gradient(180deg, #0a0a0a, #080808);
+  background: linear-gradient(180deg, rgba(67, 72, 90, 0.95), rgba(45, 50, 66, 0.92));
   border-radius: var(--radius);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   margin: 10px 0;
 }
 

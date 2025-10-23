@@ -3,18 +3,18 @@
    ======== */
 /* Global Utilities */
 .surface {
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  border: 1px solid var(--glass-border);
+  background: var(--gradient-dark-panel);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .surface--primary {
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: linear-gradient(160deg, rgba(91, 59, 227, 0.24), rgba(62, 67, 86, 0.95));
+  border: 1px solid rgba(138, 99, 255, 0.4);
 }
 
 .surface--secondary {
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(160deg, rgba(74, 79, 97, 0.85), rgba(55, 59, 76, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .text--primary {

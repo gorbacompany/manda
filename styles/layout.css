@@ -38,7 +38,7 @@
   height: 100vh;
   max-height: 100vh;
   overflow: hidden;
-  background: var(--chat-bg);
+  background: var(--gradient-chat);
 }
 
 .chat-wrap {
@@ -63,13 +63,13 @@
   gap: 10px;
   align-items: flex-end;
   padding: 12px 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01));
-  border-top: 1px solid var(--glass-border);
+  background: linear-gradient(180deg, rgba(74, 79, 97, 0.28), rgba(49, 53, 70, 0.3));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .input-tray__textarea {
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  border: 1px solid var(--glass-border);
+  background: var(--input-field-bg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius);
   color: var(--text);
   padding: 14px 16px;
@@ -86,7 +86,7 @@
 
 .input-tray__textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 2px rgba(91, 59, 227, 0.35);
 }
 
 .tray-btn {
@@ -98,24 +98,23 @@
   justify-content: center;
   cursor: pointer;
   transition: all var(--transition-medium);
-  border: 1px solid var(--glass-border);
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--gradient-dark-panel);
 }
 
 .tray-btn:hover {
-  background: linear-gradient(180deg, #0f0f0f, #0c0c0c);
-  border-color: rgba(99, 102, 241, 0.3);
+  background: linear-gradient(180deg, rgba(91, 59, 227, 0.32), rgba(65, 54, 103, 0.9));
+  border-color: rgba(138, 99, 255, 0.45);
 }
 
 .tray-btn--primary {
-  background: #000000;
-  border: none;
+  background: var(--gradient-primary);
+  border: 1px solid rgba(138, 99, 255, 0.5);
 }
 
 .tray-btn--primary:hover {
-  background: #000000;
-  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.02),
-    0 6px 20px rgba(99, 102, 241, 0.12);
+  background: linear-gradient(135deg, #6b45f0, #4b0082);
+  box-shadow: 0 12px 24px rgba(91, 59, 227, 0.3);
 }
 
 .tray-icon {

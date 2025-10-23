@@ -3,7 +3,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: var(--chat-bg); /* Asegura que el fondo base sea oscuro */
+  background-color: var(--black-true);
 }
 .app {
   display: flex;
@@ -12,10 +12,10 @@ html, body {
   max-height: 100dvh; /* Coincide con la altura */
   overflow: hidden;
   background: linear-gradient(
-    to bottom, 
-    var(--chat-bg) 0%,
-    var(--chat-bg) 85%,
-    rgba(5,5,10,0.96) 100%
+    to bottom,
+    rgba(67, 72, 90, 0.98) 0%,
+    rgba(58, 63, 80, 0.96) 70%,
+    rgba(45, 50, 66, 0.94) 100%
   );
   /* Se elimina padding-bottom de .app, ya que input-tray maneja su propio padding inferior */
 }
@@ -31,7 +31,7 @@ html, body {
   flex: 1;
   /* Usamos calc() para sumar la altura de la status bar + un padding extra */
   --safe-area-top-gap: 18px;
-  padding: calc(var(--status-bar-height, var(--safe-area-top-gap)) + var(--safe-area-top-gap)) 20px 20px;
+  padding: calc(var(--status-bar-height, var(--safe-area-top-gap)) + var(--safe-area-top-gap)) 22px 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;

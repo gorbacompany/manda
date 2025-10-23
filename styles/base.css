@@ -15,7 +15,7 @@ html, body {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
-  background-color: #000 !important; /* Asegura un fondo negro sólido */
+  background-color: var(--black-true) !important;
   overscroll-behavior: none;
 }
 
@@ -24,7 +24,7 @@ body {
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-  background: var(--black-true);
+  background: var(--gradient-chat);
   color: var(--text);
   color-scheme: dark;
   -webkit-font-smoothing: antialiased;

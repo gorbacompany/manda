@@ -5,18 +5,19 @@
   gap: 8px;
   padding: 16px;
   border-radius: var(--radius);
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  border: 1px solid var(--glass-border);
+  background: var(--gradient-dark-panel);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 30px rgba(20, 22, 33, 0.45);
   transition: all var(--transition-medium);
 }
 
 .msg--user {
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  border: 1px solid rgba(99, 102, 241, 0.1);
+  background: linear-gradient(160deg, rgba(91, 59, 227, 0.28), rgba(62, 67, 86, 0.95));
+  border: 1px solid rgba(138, 99, 255, 0.4);
 }
 
 .msg--assistant {
-  background: linear-gradient(180deg, #0b0b0b, #0a0a0a);
+  background: linear-gradient(160deg, rgba(74, 79, 97, 0.92), rgba(55, 59, 76, 0.9));
 }
 
 .msg-header {
@@ -32,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-weak);
+  background: rgba(91, 59, 227, 0.22);
   flex-shrink: 0;
 }
 
@@ -55,8 +56,8 @@
 }
 
 .msg-content pre {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--glass-border);
+  background: rgba(49, 53, 70, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius);
   padding: 16px;
   overflow-x: auto;
@@ -86,6 +87,6 @@
 }
 
 .msg-actions .msg-action:hover {
-  background: var(--accent-secondary) !important;
+  background: var(--gradient-primary) !important;
   color: white !important;
 }

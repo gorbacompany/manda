@@ -1,23 +1,26 @@
 /* ===========================
-   THEME: AMOLED TRUE BLACK
+   THEME: GLOBAL MID-GRAY AURORA
    =========================== */
 /* Design System Variables */
 :root {
   /* Colors */
-  --black-true: #000000;
-  --panel: #0a0a0a;
-  --chat-bg: #050505;
-  --muted: #9aa0a6;
-  --text: #e9eef8;
-  --accent: #6366f1;
-  --accent-weak: rgba(99, 102, 241, 0.18);
-  --glass-border: rgba(255, 255, 255, 0.03);
-  --accent-secondary: #7c84ff;
+  --black-true: #393e4d;
+  --panel: #323747;
+  --panel-elevated: #3d4254;
+  --chat-bg: #353a4a;
+  --surface-glass: rgba(74, 79, 97, 0.6);
+  --muted: #b7bdd0;
+  --text: #f4f6ff;
+  --text-soft: rgba(244, 246, 255, 0.72);
+  --accent: #5b3be3;
+  --accent-weak: rgba(91, 59, 227, 0.18);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --accent-secondary: #8a63ff;
 
-  /* New variables for input tray buttons and input fields */
-  --input-field-bg: linear-gradient(180deg, #0b0b0b, #0a0a0a); /* New variable */
-  --button-icon-color: white; /* New variable for button icon color */
-  --button-size: 44px; /* Unified button size */
+  /* Controls */
+  --input-field-bg: linear-gradient(180deg, rgba(70, 74, 92, 0.95), rgba(58, 62, 80, 0.95));
+  --button-icon-color: #f4f6ff;
+  --button-size: 44px;
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -45,13 +48,13 @@
 
   /* Gradients */
   --gradient-accent: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-  --gradient-dark-panel: linear-gradient(180deg, var(--panel), #070707);
-  --gradient-chat: linear-gradient(180deg, #0b0b0b, #0a0a0a);
-  --gradient-accent-weak: linear-gradient(160deg, rgba(99, 102, 241, 0.16), rgba(12, 12, 20, 0.88));
-  --gradient-primary: linear-gradient(135deg, var(--accent), #4b0082);
+  --gradient-dark-panel: linear-gradient(180deg, rgba(60, 64, 82, 0.96), rgba(47, 51, 68, 0.98));
+  --gradient-chat: linear-gradient(180deg, #3d4251, #313646);
+  --gradient-accent-weak: linear-gradient(160deg, rgba(91, 59, 227, 0.18), rgba(49, 43, 86, 0.82));
+  --gradient-primary: linear-gradient(135deg, #5b3be3, #4b0082);
 
   /* Elevations (shadows) */
-  --elevation-1: 0 2px 4px rgba(0, 0, 0, 0.4);
-  --elevation-2: 0 4px 8px rgba(0, 0, 0, 0.5);
-  --elevation-3: 0 8px 16px rgba(0, 0, 0, 0.6);
+  --elevation-1: 0 2px 6px rgba(17, 18, 24, 0.35);
+  --elevation-2: 0 4px 14px rgba(18, 20, 30, 0.45);
+  --elevation-3: 0 12px 28px rgba(18, 20, 30, 0.5);
 }
