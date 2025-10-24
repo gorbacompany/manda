@@ -1,10 +1,10 @@
 /* Navigation Panels */
 .nav-panel {
-  padding: 16px;
+  padding: 2px;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.nav-panel[aria-labelledby="panel-b-title"] {
+.nav-panel {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
   position: absolute;
   top: 0;
@@ -39,11 +39,11 @@
 }
 
 .nav-section {
-  margin-bottom: 24px;
+  margin-bottom: 2px;
 }
 
 .nav-section h4 {
-  margin: 0 0 12px 0;
+  margin: 0 0 2px 0;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text);
@@ -53,7 +53,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
+  gap: 2px;
 }
 
 .section-heading h2 {
@@ -64,7 +64,7 @@
 }
 
 .new-chat-btn {
-  padding: 10px 16px;
+  padding: 2px 2px;
   background: linear-gradient(135deg, var(--accent), #7c84ff);
   color: white;
   border: none;
@@ -92,7 +92,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 10px 10px;
+  padding: 0 2px 2px;
 }
 
 .nav-section ul {
@@ -101,14 +101,14 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
 }
 
 .nav-section li a {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 2px;
+  padding: 2px 2px;
   border-radius: var(--radius);
   color: var(--muted);
   text-decoration: none;
@@ -136,10 +136,10 @@
 .nav-panel {
   position: absolute;
   inset: 0;
-  padding: 22px;
+  padding: 2px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 2px;
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
 }
 
@@ -175,7 +175,7 @@
 .panel-header {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 
 .panel-title {
@@ -196,16 +196,19 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding-right: 6px;
+  gap: 2px;
+  padding: 0 2px 2px;
 }
-
 /* Navigation Card Grid */
 .nav-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
+  gap: 2px;
   flex: 1;
   overflow-y: auto;
-  padding-right: 6px;
+  padding: 0;
+}
+
+.nav-section:last-child {
+  margin-bottom: 0;
 }

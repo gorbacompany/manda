@@ -306,10 +306,6 @@ function setupChatList() {
     mergeChatsButton = document.getElementById('merge-chats-btn');
     sidebarOverlayElement = document.querySelector('.sidebar-overlay');
 
-    if (chatListSidebarElement) {
-        chatListSidebarElement.setAttribute('aria-hidden', 'true');
-    }
-
     chatListToggleButton?.addEventListener('click', () => {
         const isOpen = chatListSidebarElement?.classList.contains('open');
         if (isOpen) {
@@ -320,13 +316,9 @@ function setupChatList() {
         }
     });
 
-    closeChatListButton?.addEventListener('click', () => {
-        closeSidebar();
-    });
+    closeChatListButton?.addEventListener('click', closeSidebar);
 
-    sidebarOverlayElement?.addEventListener('click', () => {
-        closeSidebar();
-    });
+    sidebarOverlayElement?.addEventListener('click', closeSidebar);
 
     newChatButton?.addEventListener('click', () => {
         createNewChat();
@@ -382,7 +374,6 @@ function setupChatList() {
 function openSidebar() {
     if (!chatListSidebarElement) return;
     chatListSidebarElement.classList.add('open');
-    chatListSidebarElement.setAttribute('aria-hidden', 'false');
     document.body.classList.add('sidebar-open');
     updateOverlayState();
 }
@@ -390,7 +381,9 @@ function openSidebar() {
 function closeSidebar() {
     if (!chatListSidebarElement) return;
     chatListSidebarElement.classList.remove('open');
-    chatListSidebarElement.setAttribute('aria-hidden', 'true');
+    if (chatListSidebarElement.contains(document.activeElement)) {
+        chatListToggleButton?.focus({ preventScroll: true });
+    }
     document.body.classList.remove('sidebar-open');
     sidebarOverlayElement?.classList.remove('active');
     resetSidebarNavigation();
@@ -459,52 +452,72 @@ function renderChatList() {
         title.className = 'chat-title';
         title.textContent = chat.title || 'Chat sin título';
 
-        const controlsContainer = document.createElement('div');
-        controlsContainer.className = 'chat-controls';
-
-        // Botones de acción
         const actions = [
-            { name: 'Copiar', class: 'chat-copy-btn', handler: copyChatContent, svg: '<path d="M15 3H6a2 2 0 0 0-2 2v11" stroke="currentColor" stroke-width="1.4" /><path d="M9 7h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" />' },
-            { name: 'Descargar', class: 'chat-download-btn', handler: downloadChatMarkdown, svg: '<path d="M12 3v12" /><path d="M7 11l5 5 5-5" /><path d="M5 19h14" />' },
-            { name: 'Renombrar', class: 'chat-rename-btn', handler: async () => {
+            {
+                label: 'Copiar',
+                class: 'chat-copy-btn',
+                icon: '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>',
+                handler: copyChatContent
+            },
+            {
+                label: 'Descargar',
+                class: 'chat-download-btn',
+                icon: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>',
+                handler: downloadChatMarkdown
+            },
+            {
+                label: 'Renombrar',
+                class: 'chat-rename-btn',
+                icon: '<path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>',
+                handler: async () => {
                 const newTitle = await showCustomPrompt('Renombrar chat', chat.title || '');
                 if (typeof newTitle === 'string' && newTitle.trim()) {
                     renameChat(chat.id, newTitle.trim());
                     renderChatList();
                     showNotification('Título actualizado', 'success');
                 }
-            }, svg: '<path d="M16.862 3.487 20.513 7.14a1.5 1.5 0 0 1 0 2.121L10.05 19.724l-4.121.707.707-4.122 10.463-10.464a1.5 1.5 0 0 1 2.121 0Z" /><path d="M14.389 5.96 18.04 9.61" />' },
-            { name: 'Eliminar', class: 'chat-delete-btn', handler: async () => {
+            }
+            },
+            {
+                label: 'Eliminar',
+                class: 'chat-delete-btn',
+                icon: '<polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>',
+                handler: async () => {
                 const result = await showCustomConfirm('¿Eliminar este chat?');
                 if (result) {
                     deleteChat(chat.id);
                     renderChatList();
                 }
-            }, svg: '<path d="M5 7h14" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" />' }
+            }
+            }
         ];
-
-        actions.forEach(action => {
-            const btn = document.createElement('button');
-            btn.className = `chat-control-btn ${action.class}`;
-            btn.title = action.name;
-            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${action.svg}</svg><span class="sr-only">${action.name}</span>`;
-            btn.addEventListener('click', e => {
-                e.stopPropagation();
-                action.handler(chat.id);
-            });
-            controlsContainer.appendChild(btn);
-        });
 
         // Meta información (fecha, etc.)
         const meta = document.createElement('div');
         meta.className = 'chat-meta';
         meta.textContent = `${chat.messageCount} mensajes • ${formatDate(chat.timestamp)}`;
 
+        const footerControls = document.createElement('div');
+        footerControls.className = 'chat-controls';
+
+        actions.forEach(action => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `chat-control-btn ${action.class}`;
+            btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${action.icon}</svg><span class="sr-only">${action.label}</span>`;
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const result = await action.handler(chat.id);
+                return result;
+            });
+            footerControls.appendChild(btn);
+        });
+
         // Ensamblar todo
         headerContainer.appendChild(title);
-        headerContainer.appendChild(controlsContainer);
         contentContainer.appendChild(headerContainer);
         contentContainer.appendChild(meta);
+        contentContainer.appendChild(footerControls);
         chatItem.appendChild(selectionCheckbox);
         chatItem.appendChild(contentContainer);
 
@@ -540,7 +553,6 @@ function updateMergeButtonState() {
     if (!mergeChatsButton) return;
     const shouldDisable = selectedChatIds.size < 2;
     mergeChatsButton.disabled = shouldDisable;
-    mergeChatsButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
 }
 
 function handleMergeSelectedChats() {

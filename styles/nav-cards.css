@@ -1,7 +1,6 @@
 /* Navigation Cards */
 .nav-card {
   composes: card from './cards.css';
-  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   gap: 16px;
   cursor: pointer;
@@ -15,7 +14,6 @@
 .nav-card:hover,
 .nav-card:focus-visible,
 .nav-card.active {
-  border-color: rgba(138, 99, 255, 0.35);
   box-shadow:
     0 20px 40px rgba(22, 24, 36, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);

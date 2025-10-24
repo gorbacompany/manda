@@ -6,7 +6,7 @@ import { getCurrentAIConfig } from './ai-config.js';
 export function createGenerationConfig(options = {}) {
     const currentConfig = getCurrentAIConfig();
     const defaultConfig = {
-        maxOutputTokens: currentConfig.maxOutputTokens ?? 65536,
+        maxOutputTokens: currentConfig.maxOutputTokens ?? 65_536,
         temperature: currentConfig.temperature ?? 0.7,
         topP: currentConfig.topP ?? 0.8,
         topK: currentConfig.topK ?? 40
@@ -17,7 +17,7 @@ export function createGenerationConfig(options = {}) {
 }
 
 // Función para validar y ajustar el prompt basado en límites de entrada aproximados
-export function validateAndAdjustPrompt(prompt, maxInputTokens = 250000) {
+export function validateAndAdjustPrompt(prompt, maxInputTokens = 250_000) {
     // Aproximación: ~4 caracteres por token (para texto en inglés/español)
     const estimatedTokens = Math.ceil(prompt.length / 4);
 
@@ -37,11 +37,11 @@ const lastSendTime = new Map();
 
 // Función para enviar mensajes a la API de Google Gemini con configuración avanzada
 export async function sendToGemini(prompt, configOptions = {}) {
-    // Validar y ajustar el prompt si es necesario
-    const adjustedPrompt = validateAndAdjustPrompt(prompt);
-
     // Obtener la configuración actual incluyendo RPM
     const currentConfig = getCurrentAIConfig();
+
+    // Validar y ajustar el prompt si es necesario según el modelo activo
+    const adjustedPrompt = validateAndAdjustPrompt(prompt, currentConfig.maxTokens ?? 250_000);
     const modelRpm = currentConfig.rpm || 10;  // Default a 10 si no está definido
     const delayMs = Math.ceil(60000 / modelRpm);  // Delay en ms entre llamadas (60s / RPM)
 
@@ -70,10 +70,8 @@ export async function sendToGemini(prompt, configOptions = {}) {
         currentIndex = 0;
     }
 
-    // Usar modelo correcto según documentación oficial
-    // NO SE DEBE CUESTIONAR EL MODELO - ES PARTE DEL ORIGEN DE LA APP
-    // SIN ESTE MODELO NO EXISTIRÍA INDIGO - ES FUNDAMENTAL PARA SU FUNCIONAMIENTO
-    const model = 'gemini-flash-latest'; // Modelo estable disponible
+    // Usar el modelo actualmente seleccionado en la configuración
+    const model = currentConfig.modelKey || 'gemini-2.5-flash-latest';
 
     // Preparar el cuerpo de la solicitud
     const body = {
@@ -88,7 +86,10 @@ export async function sendToGemini(prompt, configOptions = {}) {
     };
 
     // Intentar con cada clave API hasta encontrar una que funcione, con rotación efectiva
-    for (let attempt = 0; attempt < apiKeys.length; attempt++) {
+    let attempts = 0;
+    let lastError = null;
+
+    for (; attempts < apiKeys.length; attempts++) {
         const apiKey = apiKeys[currentIndex];
 
         // Construir endpoint con API key como parámetro de consulta (según documentación oficial)
@@ -113,12 +114,15 @@ export async function sendToGemini(prompt, configOptions = {}) {
             // Si es un error 429 (límite de tasa), rotar a la siguiente clave y continuar
             else if (response.status === 429) {
                 currentIndex = (currentIndex + 1) % apiKeys.length;
+                lastError = new Error('Límite de tasa alcanzado para la clave actual.');
                 continue;
             }
             // Si es otro tipo de error, rotar y continuar
             else {
                 const errorData = await response.json().catch(() => ({ error: { message: 'Error desconocido' } }));
-                console.error(`Error con clave ${currentIndex + 1}: ${response.status} - ${errorData.error?.message || 'Error desconocido'}`);
+                const message = `Error con clave ${currentIndex + 1}: ${response.status} - ${errorData.error?.message || 'Error desconocido'}`;
+                console.error(message);
+                lastError = new Error(message);
                 currentIndex = (currentIndex + 1) % apiKeys.length;
                 continue;
             }
@@ -126,14 +130,10 @@ export async function sendToGemini(prompt, configOptions = {}) {
             // Rotar en caso de error de red u otros problemas
             currentIndex = (currentIndex + 1) % apiKeys.length;
             console.error(`Error de red con clave ${currentIndex + 1}:`, error);
+            lastError = error;
         }
     }
 
-    // Si todas las claves fallan o están rate-limited, retry con backoff
-    const backoffDelay = Math.min(1000 * Math.pow(2, attempt), 60000);  // Backoff exponencial, max 60s
-    console.warn(`Todas las claves rate-limited o fallidas. Esperando ${backoffDelay}ms antes de retry.`);
-    await new Promise(resolve => setTimeout(resolve, backoffDelay));
-
-    // Retry el proceso completo
-    return await sendToGemini(prompt, configOptions);
+    // Si todas las claves fallan, propagar el último error capturado
+    throw (lastError ?? new Error('No se pudo contactar al modelo de Gemini con las claves disponibles.'));
 }

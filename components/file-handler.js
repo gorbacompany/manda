@@ -78,7 +78,6 @@ function renderAttachmentPreview() {
         removeBtn.type = 'button';
         removeBtn.className = 'attachment-remove';
         removeBtn.dataset.attachmentId = attachment.id;
-        removeBtn.setAttribute('aria-label', `Quitar ${attachment.name}`);
         removeBtn.textContent = '×';
 
         actionsWrapper.appendChild(statusEl);

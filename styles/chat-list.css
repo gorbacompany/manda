@@ -1,7 +1,9 @@
 /* Chat List - Estilos mejorados */
 
+
 .chat-list-container {
   padding: 12px;
+  background: transparent;
 }
 
 .chat-list-item {
@@ -12,43 +14,34 @@
   margin-bottom: 10px;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
   position: relative;
-  background: linear-gradient(180deg, rgba(74, 79, 97, 0.9), rgba(55, 59, 76, 0.88));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 8px 20px rgba(18, 20, 30, 0.35);
+  background: linear-gradient(#ffffff, #f3eee0) padding-box,
+    var(--silver) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 6px 16px var(--shadow);
 }
 
 .chat-list-item:hover {
   transform: translateY(-2px);
-  background: linear-gradient(180deg, rgba(91, 59, 227, 0.32), rgba(65, 70, 88, 0.95));
-  box-shadow:
-    0 12px 28px rgba(91, 59, 227, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  border-color: rgba(138, 99, 255, 0.35);
+  background: linear-gradient(#ffffff, #f7efd7) padding-box,
+    var(--silver) border-box;
+  box-shadow: 0 10px 20px var(--shadow-strong);
 }
 
 .chat-list-item.active {
-  border-left: 3px solid var(--accent);
-  padding-left: 9px; /* Compensar el borde */
-  background: linear-gradient(120deg, rgba(91, 59, 227, 0.28), rgba(55, 59, 76, 0.0));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 10px 24px rgba(91, 59, 227, 0.18);
+  border: 1px solid var(--accent-secondary);
+  box-shadow: 0 12px 26px rgba(197, 154, 54, 0.2);
 }
 
 .chat-list-item.selected {
-  border-color: rgba(138, 99, 255, 0.45);
-  box-shadow:
-    inset 0 0 0 1px rgba(138, 99, 255, 0.5),
-    0 12px 26px rgba(91, 59, 227, 0.22);
+  border: 1px solid var(--accent-contrast);
+  box-shadow: 0 12px 24px rgba(38, 139, 210, 0.18);
 }
 
 .chat-select-checkbox {
   margin-top: 4px; /* Alinear mejor con el texto del título */
-  accent-color: var(--accent);
+  accent-color: var(--accent-solid);
 }
 
 .chat-item-content {
@@ -80,31 +73,49 @@
   color: var(--accent);
 }
 
+
 .chat-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  flex-shrink: 0; /* Evitar que los controles se encojan */
+  margin-top: 8px;
 }
 
 .chat-control-btn {
-  background: none;
-  border: none;
-  color: var(--text); /* Cambiado de --muted a --text */
-  opacity: 0.6; /* Opacidad por defecto */
-  cursor: pointer;
-  padding: 3px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  background: linear-gradient(#ffffff, #f5efdc);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 
-.chat-control-btn:hover {
-  color: var(--accent);
-  background: rgba(91, 59, 227, 0.16);
-  transform: scale(1.1);
-  opacity: 1; /* Opacidad completa al pasar el ratón */
+.chat-control-btn svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}
+
+.chat-control-btn:hover,
+.chat-control-btn:focus-visible {
+  background: linear-gradient(135deg, rgba(76, 52, 255, 0.18), #f4ecd4);
+  border-color: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 8px 18px var(--shadow);
+  color: var(--accent-contrast);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.chat-control-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 .chat-meta {
@@ -114,14 +125,15 @@
 
 /* Estado vacío */
 .chat-list-empty {
-  color: var(--muted);
+  color: var(--text-secondary);
   text-align: center;
   padding: 40px 20px;
   font-style: italic;
-  background: linear-gradient(180deg, rgba(67, 72, 90, 0.95), rgba(45, 50, 66, 0.92));
+  background: linear-gradient(#ffffff, #f5efdc);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border);
   margin: 10px 0;
+  box-shadow: 0 4px 10px var(--shadow);
 }
 
 /* Responsive Design optimizado para móviles */

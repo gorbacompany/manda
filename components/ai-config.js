@@ -2,33 +2,121 @@
 
 // Configuración de modelos de IA disponibles
 export const AI_MODELS = {
-    'gemini-flash-latest': {
-        name: 'Gemini Flash',
+    'gemini-2.5-pro': {
+        name: 'Gemini 2.5 Pro',
         provider: 'Google DeepMind',
-        maxTokens: 250000,  // Límite TPM
-        maxOutputTokens: 65536,
-        rpm: 10,  // Requests per minute
+        type: 'advanced_reasoning',
+        version: 'latest',
+        description: 'Modelo de nivel profesional con razonamiento complejo, análisis multimodal y gran ventana de contexto. Ideal para programación avanzada, análisis de documentos extensos y comprensión profunda.',
+        maxTokens: 1_000_000,
+        maxOutputTokens: 65_536,
+        rpm: 60,
         temperature: 0.7,
         topP: 0.8,
-        topK: 40,
-        description: 'Modelo equilibrado para experiencias agénticas rápidas con multimodalidad avanzada.'
+        topK: 64,
+        capabilities: {
+            modalities: ['text', 'image', 'audio', 'video'],
+            reasoningMode: true,
+            multimodal: true
+        },
+        pricing: {
+            inputPerMillionTokensUsd: 2.5,
+            outputPerMillionTokensUsd: 10,
+            audioPerMillionTokensUsd: 5,
+            videoPerMillionTokensUsd: 5
+        },
+        freeTier: {
+            available: true,
+            requestsPerDay: 500,
+            notes: 'Cuota gratuita limitada para pruebas en AI Studio; tokens gratis variables según cuenta.'
+        },
+        apiReference: {
+            aiStudio: 'https://aistudio.google.com/',
+            resourcePath: 'models/gemini-2.5-pro',
+            vertexPathExample: 'projects/{PROJECT_ID}/locations/{LOCATION}/models/gemini-2.5-pro',
+            docsUrl: 'https://ai.google.dev/gemini-api/docs/models'
+        },
+        releaseDate: '2025-08',
+        status: 'stable'
     },
-    'gemini-flash-lite-latest': {
-        name: 'Gemini Flash Lite',
+    'gemini-2.5-flash-latest': {
+        name: 'Gemini 2.5 Flash',
         provider: 'Google DeepMind',
-        maxTokens: 250000,  // Límite TPM
-        maxOutputTokens: 50000,
-        rpm: 15,  // Requests per minute
+        type: 'balanced_speed_quality',
+        version: 'latest',
+        description: 'Modelo equilibrado de alta velocidad y calidad razonable. Adecuado para producción con razonamiento medio y coste moderado.',
+        maxTokens: 1_048_576,
+        maxOutputTokens: 65_536,
+        rpm: 120,
         temperature: 0.65,
         topP: 0.8,
-        topK: 40,
-        description: 'Optimizado para costos bajos, respuestas concisas y traducción multimodal precisa.'
+        topK: 48,
+        capabilities: {
+            modalities: ['text', 'image', 'audio', 'video'],
+            reasoningMode: false,
+            multimodal: true
+        },
+        pricing: {
+            inputPerMillionTokensUsd: 0.3,
+            outputPerMillionTokensUsd: 2.5,
+            audioPerMillionTokensUsd: 1,
+            videoPerMillionTokensUsd: 1
+        },
+        freeTier: {
+            available: true,
+            requestsPerDay: 500,
+            notes: 'Free Tier activo en AI Studio. Algunas operaciones marcadas como sin costo inicial.'
+        },
+        apiReference: {
+            aiStudio: 'https://aistudio.google.com/',
+            resourcePath: 'models/gemini-2.5-flash',
+            vertexPathExample: 'projects/{PROJECT_ID}/locations/{LOCATION}/models/gemini-2.5-flash',
+            docsUrl: 'https://ai.google.dev/gemini-api/docs/models'
+        },
+        releaseDate: '2025-09',
+        status: 'stable'
+    },
+    'gemini-2.5-flash-lite-latest': {
+        name: 'Gemini 2.5 Flash Lite',
+        provider: 'Google DeepMind',
+        type: 'low_cost_high_throughput',
+        version: 'latest',
+        description: 'Modelo de bajo costo y alta velocidad para tareas ligeras o de gran volumen. Ideal para inferencia en masa y aplicaciones con costo mínimo.',
+        maxTokens: 1_048_576,
+        maxOutputTokens: 65_536,
+        rpm: 200,
+        temperature: 0.6,
+        topP: 0.85,
+        topK: 32,
+        capabilities: {
+            modalities: ['text', 'image', 'audio', 'video', 'pdf'],
+            reasoningMode: false,
+            multimodal: true
+        },
+        pricing: {
+            inputPerMillionTokensUsd: 0.1,
+            outputPerMillionTokensUsd: 0.4,
+            audioPerMillionTokensUsd: 0.3,
+            videoPerMillionTokensUsd: 0.3
+        },
+        freeTier: {
+            available: true,
+            requestsPerDay: 500,
+            notes: 'Incluye cuota gratuita total para texto, imagen y video en Free Tier de AI Studio.'
+        },
+        apiReference: {
+            aiStudio: 'https://aistudio.google.com/',
+            resourcePath: 'models/gemini-2.5-flash-lite',
+            vertexPathExample: 'projects/{PROJECT_ID}/locations/{LOCATION}/models/gemini-2.5-flash-lite',
+            docsUrl: 'https://ai.google.dev/gemini-api/docs/models'
+        },
+        releaseDate: '2025-09',
+        status: 'stable'
     }
 };
 
 const STORAGE_KEYS = {
     activeModel: 'manda_active_model',
-    temperature: 'manda_temperature',
     topP: 'manda_top_p',
     topK: 'manda_top_k',
     systemPrompt: 'manda_system_prompt'
@@ -39,33 +127,13 @@ function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
 }
 
-// System prompt por defecto
-export const DEFAULT_SYSTEM_PROMPT = `Eres un asistente de programación avanzado llamado Cascade, especializado en desarrollo de software moderno.
-
-Tus características principales:
-- Eres un experto en múltiples lenguajes de programación y frameworks
-- Proporcionas soluciones limpias, eficientes y bien documentadas
-- Sigues las mejores prácticas de desarrollo
-- Eres paciente y explicas conceptos complejos de manera clara
-- Te mantienes actualizado con las últimas tendencias tecnológicas
-
-Reglas de comportamiento:
-1. Siempre proporciona código funcional y probado
-2. Usa comentarios claros y documentación apropiada
-3. Considera la seguridad, rendimiento y mantenibilidad
-4. Sé proactivo en sugerir mejoras y optimizaciones
-5. Mantén un tono profesional pero amigable
-
-Formato de respuesta:
-- Usa bloques de código con sintaxis apropiada
-- Proporciona explicaciones claras antes y después del código
-- Incluye ejemplos prácticos cuando sea útil
-- Sé conciso pero completo en tus respuestas`;
+// System prompt por defecto (inicialmente vacío)
+export const DEFAULT_SYSTEM_PROMPT = '';
 
 // Configuración fija de IA (solo lectura para visualización)
-let currentModelKey = localStorage.getItem(STORAGE_KEYS.activeModel) || 'gemini-flash-latest';
+let currentModelKey = localStorage.getItem(STORAGE_KEYS.activeModel) || 'gemini-2.5-flash-latest';
 if (!AI_MODELS[currentModelKey]) {
-    currentModelKey = 'gemini-flash-latest';
+    currentModelKey = 'gemini-2.5-flash-latest';
 }
 
 const CURRENT_AI_CONFIG = {
@@ -193,11 +261,15 @@ export async function sendToGemini(prompt) {
     // Simular respuesta de la API
     return new Promise((resolve) => {
         setTimeout(() => {
+            const promptPreview = config.systemPrompt
+                ? `System prompt aplicado: "${config.systemPrompt.substring(0, 50)}...". `
+                : '';
+
             resolve({
                 candidates: [{
                     content: {
                         parts: [{
-                            text: `Respuesta simulada usando ${config.model.name}. System prompt aplicado: "${config.systemPrompt.substring(0, 50)}...". Contexto de ${config.maxTokens} tokens soportado.`
+                            text: `Respuesta simulada usando ${config.model.name}. ${promptPreview}Contexto de ${config.maxTokens} tokens soportado.`
                         }]
                     }
                 }]

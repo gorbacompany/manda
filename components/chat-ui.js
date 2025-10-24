@@ -3,32 +3,8 @@
 import { copyToClipboard } from './utils.js';
 import { saveCurrentChat } from './chat-manager.js';
 
-const ACTION_ICONS = {
-    copy: `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M16 3H8a2 2 0 0 0-2 2v10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M10 7h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-    `,
-    delete: `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M5 7h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M10 11v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M14 11v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
-            <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-    `,
-    regenerate: `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M21 12a9 9 0 1 1-2.64-6.36" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="m21 4-2 4-4-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-    `
-};
-
 const CODE_COPY_ICON = `
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path d="M14 3H6a2 2 0 0 0-2 2v12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
         <path d="M10 7h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
     </svg>
@@ -90,26 +66,23 @@ function createMessageActions({ onCopy, onDelete, onRegenerate }) {
     const actions = document.createElement('div');
     actions.className = 'msg-actions';
 
-    const copyBtn = document.createElement('button');
-    copyBtn.type = 'button';
-    copyBtn.className = 'msg-action copy';
-    copyBtn.innerHTML = `${ACTION_ICONS.copy}<span class="sr-only">Copiar mensaje</span>`;
-    copyBtn.addEventListener('click', onCopy);
+    const buildActionButton = (label, className, handler) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `msg-action ${className}`.trim();
+        button.innerHTML = `<span class="msg-action-label">${label}</span>`;
+        button.addEventListener('click', handler);
+        return button;
+    };
+
+    const copyBtn = buildActionButton('Copiar', 'copy', onCopy);
     actions.appendChild(copyBtn);
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.type = 'button';
-    deleteBtn.className = 'msg-action delete';
-    deleteBtn.innerHTML = `${ACTION_ICONS.delete}<span class="sr-only">Borrar mensaje</span>`;
-    deleteBtn.addEventListener('click', onDelete);
+    const deleteBtn = buildActionButton('Borrar', 'delete', onDelete);
     actions.appendChild(deleteBtn);
 
     if (typeof onRegenerate === 'function') {
-        const regenerateBtn = document.createElement('button');
-        regenerateBtn.type = 'button';
-        regenerateBtn.className = 'msg-action regenerate';
-        regenerateBtn.innerHTML = `${ACTION_ICONS.regenerate}<span class="sr-only">Repetir mensaje</span>`;
-        regenerateBtn.addEventListener('click', onRegenerate);
+        const regenerateBtn = buildActionButton('Regenerar', 'regenerate', onRegenerate);
         actions.appendChild(regenerateBtn);
     }
 
@@ -214,7 +187,6 @@ function refreshRegenerateButtons() {
         regenerateBtn.classList.toggle('regenerate--visible', isLast);
         regenerateBtn.hidden = !isLast;
         regenerateBtn.tabIndex = isLast ? 0 : -1;
-        regenerateBtn.setAttribute('aria-hidden', isLast ? 'false' : 'true');
     });
 }
 

@@ -72,10 +72,8 @@ function initializeSidebarToggle() {
         sidebar.classList.toggle('open');
         if (overlay) overlay.classList.toggle('active');
         body.classList.toggle('sidebar-open');
-        
+
         const isOpen = sidebar.classList.contains('open');
-        toggleBtn.setAttribute('aria-expanded', isOpen.toString());
-        
         // Enfocar el primer elemento del sidebar cuando se abre
         if (isOpen) {
             const firstCard = document.querySelector('.nav-card');
@@ -151,7 +149,6 @@ function renderCardGrid() {
         cardElement.dataset.sectionId = card.sectionId;
         cardElement.setAttribute('role', 'button');
         cardElement.setAttribute('tabindex', '0');
-        cardElement.setAttribute('aria-label', `${card.title}: ${card.description}`);
         cardElement.innerHTML = createCardInnerHTML(card.id, card);
 
         cardGrid.appendChild(cardElement);
@@ -160,7 +157,7 @@ function renderCardGrid() {
 
 function createCardInnerHTML(cardId, card) {
     const base = `
-        <div class="nav-card-icon" aria-hidden="true">${card.icon}</div>
+        <div class="nav-card-icon">${card.icon}</div>
         <div class="nav-card-content">
             <h4 class="nav-card-title">${card.title}</h4>
             <p class="nav-card-description">${card.description}</p>
@@ -203,8 +200,8 @@ function renderCardMetric(cardId) {
                     <span>Tema activo</span>
                     <strong>Indigo Dark</strong>
                     <div class="theme-metric-swatches">
-                        <span class="swatch" aria-hidden="true"></span>
-                        <span class="swatch alt" aria-hidden="true"></span>
+                        <span class="swatch"></span>
+                        <span class="swatch alt"></span>
                     </div>
                 </div>`;
         default:
@@ -313,10 +310,8 @@ function setupModelSelection() {
     modelCardContainer.querySelectorAll('.model-card').forEach(card => {
         if (card.dataset.modelId === modelKey) {
             card.classList.add('active');
-            card.setAttribute('aria-pressed', 'true');
         } else {
             card.classList.remove('active');
-            card.setAttribute('aria-pressed', 'false');
         }
 
         if (!card.dataset.bindInitialized) {

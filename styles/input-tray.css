@@ -6,7 +6,7 @@
   padding: 12px 20px calc(max(12px, env(safe-area-inset-bottom, 12px)) + var(--navigation-bar-height, 0px)) 20px;
   background: none;
   background-color: transparent;
-  border-top: none; /* Eliminado el borde superior */
+  border: none; /* Eliminado todos los bordes */
   position: fixed; /* Asegura que se fije en la parte inferior */
   bottom: 0; /* Posición inicial en la parte inferior */
   left: 0;
@@ -14,6 +14,7 @@
   width: 100%; /* Ocupa todo el ancho */
   box-sizing: border-box; /* Incluye padding y borde en el ancho/alto */
   z-index: 1000; /* Asegura que esté por encima del contenido principal */
+  box-shadow: none;
 }
 
 /* Estilo para cuando el teclado virtual está abierto */
@@ -27,6 +28,9 @@
   grid-template-columns: auto 1fr auto;
   gap: 10px;
   align-items: flex-end;
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .input-tray__textarea {
@@ -59,6 +63,22 @@ box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
   margin-bottom: 8px;
   color: var(--text);
   font-size: 0.9rem;
+}
+
+#attachmentPreview:empty {
+  display: none;
+  padding: 0;
+  margin: 0;
+}
+
+#sendStatus:empty {
+  display: none;
+  padding: 0;
+  margin: 0;
+}
+
+#sendStatus {
+  border: none;
 }
 
 /* Responsive Styles */

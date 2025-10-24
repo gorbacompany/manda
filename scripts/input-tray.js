@@ -85,6 +85,27 @@ function buildPromptPayload(history, text, attachments) {
     return sections.join('\n\n');
 }
 
+// Extraer el historial actual de la conversación desde el DOM
+function getConversationHistory() {
+    const messageNodes = Array.from(document.querySelectorAll('#messages .msg'));
+
+    return messageNodes.map((node) => {
+        const role = node.classList.contains('bot')
+            ? 'bot'
+            : node.classList.contains('user')
+                ? 'user'
+                : 'system';
+
+        const stored = node.dataset?.messageContent;
+        const content = stored ?? node.querySelector('.msg-content')?.textContent ?? node.textContent ?? '';
+
+        return {
+            role,
+            content: (content || '').trim()
+        };
+    }).filter((entry) => entry.content.length);
+}
+
 // Función para manejar el envío de mensajes
 async function handleSendMessage() {
     const input = document.getElementById('input');

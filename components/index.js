@@ -45,7 +45,7 @@ window.setupInputTray = setupInputTray;
 
 // Configuración inicial cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Inicializando aplicación Indigo Chat...');
+    console.log('🚀 Inicializando aplicación Manda Studio...');
 
     // Inicializar todos los módulos
     setupChatUI();

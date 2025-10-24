@@ -59,35 +59,45 @@ export function renderParamsInfo() {
     const config = getCurrentAIConfig();
 
     container.innerHTML = `
-        <section class="params-section" aria-label="Parámetros de generación">
-            <h3>Parámetros del modelo</h3>
-            <div class="param-control">
-                <label for="temperature-slider">Temperatura</label>
-                <div class="slider-container">
-                    <input id="temperature-slider" type="range" min="0" max="1" step="0.01" value="${config.temperature.toFixed(2)}" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${config.temperature.toFixed(2)}" aria-label="Temperatura del modelo">
-                    <span class="slider-value" data-bind="temperature-value">${config.temperature.toFixed(2)}</span>
+        <div class="params-card-stack">
+            <section class="params-card params-card--sliders">
+                <header class="params-card__header">
+                    <h3 class="params-card__title">Parámetros del modelo</h3>
+                    <p class="params-card__subtitle">Ajusta la creatividad y diversidad de las respuestas.</p>
+                </header>
+                <div class="params-grid">
+                    <div class="param-control">
+                        <label for="temperature-slider">Temperatura</label>
+                        <div class="slider-container">
+                            <input id="temperature-slider" type="range" min="0" max="1" step="0.01" value="${config.temperature.toFixed(2)}">
+                            <span class="slider-value" data-bind="temperature-value">${config.temperature.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="param-control">
+                        <label for="top-p-slider">Top-P</label>
+                        <div class="slider-container">
+                            <input id="top-p-slider" type="range" min="0" max="1" step="0.01" value="${(config.topP ?? 0.8).toFixed(2)}">
+                            <span class="slider-value" data-bind="top-p-value">${(config.topP ?? 0.8).toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="param-control">
+                        <label for="top-k-slider">Top-K</label>
+                        <div class="slider-container">
+                            <input id="top-k-slider" type="range" min="1" max="128" step="1" value="${config.topK ?? 40}">
+                            <span class="slider-value" data-bind="top-k-value">${config.topK ?? 40}</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="param-control">
-                <label for="top-p-slider">Top-P</label>
-                <div class="slider-container">
-                    <input id="top-p-slider" type="range" min="0" max="1" step="0.01" value="${(config.topP ?? 0.8).toFixed(2)}" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${(config.topP ?? 0.8).toFixed(2)}" aria-label="Top-P">
-                    <span class="slider-value" data-bind="top-p-value">${(config.topP ?? 0.8).toFixed(2)}</span>
-                </div>
-            </div>
-            <div class="param-control">
-                <label for="top-k-slider">Top-K</label>
-                <div class="slider-container">
-                    <input id="top-k-slider" type="range" min="1" max="128" step="1" value="${config.topK ?? 40}" aria-valuemin="1" aria-valuemax="128" aria-valuenow="${config.topK ?? 40}" aria-label="Top-K">
-                    <span class="slider-value" data-bind="top-k-value">${config.topK ?? 40}</span>
-                </div>
-            </div>
-        </section>
-        <section class="prompt-section" aria-label="System Prompt">
-            <h3>System Prompt</h3>
-            <textarea id="system-prompt-editor" class="system-prompt-editor" aria-label="Editar system prompt" placeholder="Define el comportamiento del asistente...">${escapeHtml(config.systemPrompt)}</textarea>
-            <div class="prompt-meta" id="system-prompt-meta"></div>
-        </section>
+            </section>
+            <section class="params-card params-card--prompt">
+                <header class="params-card__header">
+                    <h3 class="params-card__title">System Prompt</h3>
+                    <p class="params-card__subtitle">Define instrucciones persistentes para el asistente.</p>
+                </header>
+                <textarea id="system-prompt-editor" class="system-prompt-editor" placeholder="Define el comportamiento del asistente...">${escapeHtml(config.systemPrompt)}</textarea>
+                <div class="prompt-meta" id="system-prompt-meta"></div>
+            </section>
+        </div>
     `;
 
     bindParamControls(container);
@@ -132,7 +142,6 @@ function bindParamControls(container) {
             const numeric = Number(event.target.value);
             tempValue.textContent = numeric.toFixed(2);
             updateTemperature(numeric);
-            tempSlider.setAttribute('aria-valuenow', numeric.toFixed(2));
         };
         tempSlider.addEventListener('input', (event) => {
             const numeric = Number(event.target.value);
@@ -146,7 +155,6 @@ function bindParamControls(container) {
             const numeric = Number(event.target.value);
             topPValue.textContent = numeric.toFixed(2);
             updateTopP(numeric);
-            topPSlider.setAttribute('aria-valuenow', numeric.toFixed(2));
         };
         topPSlider.addEventListener('input', (event) => {
             const numeric = Number(event.target.value);
@@ -160,7 +168,6 @@ function bindParamControls(container) {
             const numeric = Number(event.target.value);
             topKValue.textContent = numeric.toFixed(0);
             updateTopK(numeric);
-            topKSlider.setAttribute('aria-valuenow', numeric.toFixed(0));
         };
         topKSlider.addEventListener('input', (event) => {
             const numeric = Number(event.target.value);
