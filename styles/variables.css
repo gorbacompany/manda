@@ -1,0 +1,73 @@
+:root {
+  /* ========
+   NUEVA PALETA DE COLORES (Tema Solarized Light adaptado con colores de logo)
+   ======== */
+  
+  /* Colores base de Solarized Light */
+  --bg-main: #fdf6e3; /* Fondo principal (base3) */
+  --bg-panel: #eee8d5; /* Paneles / Tarjetas (base2) */
+  --text-main: #657b83; /* Texto principal (base00) */
+  --text-muted: #93a1a1; /* Texto secundario (base1) */
+  --border: #93a1a1; /* Bordes / Divisiones (base1) */
+  --ui-muted: #586e75; /* Scrollbar / UI sutiles (base01) */
+  --link-active: #b58900; /* Links y estados activos (yellow) */
+  
+  /* Colores de acento del logo (índigo, morado, azul oscuro, violeta brillante) */
+  --logo-indigo: #6c71c4; /* violet */
+  --logo-purple: #d33682; /* magenta */
+  --logo-dark-blue: #268bd2; /* blue */
+  --logo-bright-violet: #6c71c4; /* violet (mismo que indigo para coherencia) */
+  
+  /* Gradientes del logo */
+  --logo-gradient-indigo-purple: linear-gradient(135deg, var(--logo-indigo), var(--logo-purple));
+  --logo-gradient-darkblue-violet: linear-gradient(135deg, var(--logo-dark-blue), var(--logo-bright-violet));
+  --logo-gradient-combined: linear-gradient(135deg, var(--logo-indigo), var(--logo-purple), var(--logo-dark-blue));
+  
+  /* Gradientes */
+  --accent: var(--logo-gradient-indigo-purple); /* Acento (botones, enlaces) */
+  --accent-hover: var(--logo-gradient-darkblue-violet); /* Hover de acento */
+  --silver: linear-gradient(135deg, #e8e8e8, #bfc0c1); /* Efecto plateado */
+  --shadow: rgba(101, 123, 131, 0.2); /* Sombras suaves (basado en base00) */
+  --bg-alt: #f8f0e0; /* Fondo alternativo */
+  
+  /* Gradientes de apoyo */
+  --gradient-sunlit-cream: linear-gradient(135deg, #fefcf7, #f5f0e6);
+  --gradient-soft-metal: linear-gradient(135deg, #f4f4f4, #d0d0d0);
+  --gradient-warm-mist: linear-gradient(120deg, #f2eddf, #fdf9f0);
+  --gradient-beige-glow: linear-gradient(145deg, #f0e9d8, #f9f4e7);
+  
+  /* ========
+   GRADIENTES EXISTENTES (Manteniendo para compatibilidad)
+   ======== */
+   
+  /* Main background gradient (darker) */
+  --gradient-chat: linear-gradient(
+    135deg,
+    rgba(23, 183, 169, 0.3) 0%,
+    rgba(15, 17, 19, 1) 25%,
+    rgba(59, 42, 90, 1) 100%
+  );
+
+  /* Menu card hover gradient */
+  --menu-card-hover: linear-gradient(
+    135deg,
+    rgba(138, 43, 226, 0.1) 0%,
+    rgba(147, 112, 219, 0.2) 50%,
+    rgba(173, 216, 230, 0.3) 100%
+  );
+
+  /* Button gradient */
+  --button-gradient: radial-gradient(
+    circle,
+    rgba(63, 81, 181, 0.8) 0%,
+    rgba(123, 31, 162, 1) 100%
+  );
+
+  /* Input tray gradient */
+  --input-tray-gradient: linear-gradient(
+    135deg,
+    rgba(23, 183, 169, 0.1) 0%,
+    rgba(15, 17, 19, 0.9) 50%,
+    rgba(59, 42, 90, 0.8) 100%
+  );
+}

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Manda</title>
+  <link rel="stylesheet" href="styles/variables.css" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <!-- Removido layout.css y components.css y añadidos los nuevos archivos CSS -->
+  <link rel="stylesheet" href="styles/panel-layout.css" />
+  <link rel="stylesheet" href="styles/sidebar-layout.css" />
+  <link rel="stylesheet" href="styles/sidebar-controls.css" />
+  <link rel="stylesheet" href="styles/model-cards.css" />
+  <link rel="stylesheet" href="styles/navigation-styles.css" />
+  <link rel="stylesheet" href="styles/nav-cards.css" />
+  <link rel="stylesheet" href="styles/chat-list.css" />
+  <link rel="stylesheet" href="styles/buttons.css" />
+  <link rel="stylesheet" href="styles/messages.css" />
+  <link rel="stylesheet" href="styles/floating-controls.css" />
+  <link rel="stylesheet" href="styles/api-cards.css" />
+  <link rel="stylesheet" href="styles/modal-styles.css" />
+  <link rel="stylesheet" href="styles/overlay.css" />
+  <link rel="stylesheet" href="styles/utilities.css" />
+  <link rel="stylesheet" href="styles/responsive.css" />
+  <link rel="stylesheet" href="styles/logo-button.css" />
+  <link rel="stylesheet" href="styles/input-tray.css" />
+  <!-- Dark theme CSS (AMOLED True Black) -->
+  <link rel="stylesheet" href="styles/dark.css" />
+  <link rel="icon" href="components/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/dist/highlight.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" defer></script>
+  <style>
+    /* Ocultar barra de desplazamiento para todos los elementos en navegadores Webkit */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Ocultar barra de desplazamiento para todos los elementos en Firefox, IE y Edge */
+    * {
+      scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none;  /* IE y Edge */
+    }
+  </style>
+</head>
+
+<body>
+  <!-- OVERLAY PARA CERRAR SIDEBAR EN MÓVILES -->
+  <div class="sidebar-overlay"></div>
+
+  <div class="app" role="application" aria-label="Manda Studio">
+    <section class="chat-wrap" aria-live="polite">
+      <main class="messages" id="messages" tabindex="0" aria-label="Mensajes"></main>
+    </section>
+
+    <!-- INPUT TRAY -->
+    <div class="input-tray" role="region" aria-label="Escribir mensaje">
+      <input type="file" id="fileInput" accept=".txt,.md,.pdf,.doc,.docx,image/*,audio/*,video/*" multiple aria-label="Seleccionar archivos" hidden />
+      <div id="attachmentPreview" class="attachment-preview" aria-live="polite"></div>
+      <div id="sendStatus" class="send-status" role="status" aria-live="assertive"></div>
+
+      <div class="input-controls">
+        <button class="tray-btn tray-btn--ghost attach-btn" id="attachBtn" title="Adjuntar" aria-label="Adjuntar archivo">
+          <img src="components/cloud-upload.svg" alt="Adjuntar archivo" class="tray-icon" width="20" height="20" aria-hidden="true">
+          <span class="sr-only">Subir</span>
+        </button>
+
+        <textarea id="input" class="input-tray__textarea" placeholder="Escribe un mensaje..." rows="1" aria-label="Escribir mensaje"></textarea>
+
+        <button class="tray-btn tray-btn--primary send-btn" id="sendBtn" title="Enviar" aria-label="Enviar mensaje">
+          <img src="components/send-svgrepo-com (6).svg" alt="Enviar mensaje" class="tray-icon send-icon" width="20" height="20" aria-hidden="true">
+          <span class="sr-only">Enviar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT LIST SIDEBAR -->
+  <aside id="chat-list-sidebar" class="chat-list-sidebar" aria-hidden="true">
+    <div class="sidebar-shell">
+      <div class="sidebar-top-bar">
+        <h3 class="sidebar-title">Manda Studio</h3>
+      </div>
+
+      <div class="card-navigation-container" data-active-panel="A">
+        <div id="panel-A" class="nav-panel" aria-labelledby="panel-a-title">
+          <div id="nav-card-grid" class="card-grid nav-card-grid" role="list"></div>
+        </div>
+
+        <div id="panel-B" class="nav-panel" aria-labelledby="panel-b-title">
+          <div class="panel-header">
+            <button class="back-button" type="button" aria-label="Volver">←</button>
+            <h3 id="panel-b-title" class="panel-title"></h3>
+          </div>
+          <div class="panel-body">
+            <section id="nav-section-history" class="nav-section" hidden aria-label="Historial de chats">
+              <div class="section-heading">
+                <button id="new-chat-btn" class="new-chat-btn">+ Nuevo Chat</button>
+                <button id="merge-chats-btn" class="new-chat-btn" disabled>Fusionar chats</button>
+              </div>
+              <div id="chat-list-container" class="chat-list-container"></div>
+            </section>
+
+            <section id="nav-section-params" class="nav-section" hidden aria-label="Parámetros del modelo">
+              <div id="params-info-container" class="info-panel"></div>
+            </section>
+
+            <section id="nav-section-model" class="nav-section" hidden aria-label="Detalles del modelo">
+              <div class="model-cards" role="list">
+                <button class="model-card" type="button" data-model-id="gemini-flash-latest" role="listitem">
+                  <div class="model-card-header">
+                    <span class="model-card-title">Gemini Flash</span>
+                    <span class="model-card-subtitle">Velocidad equilibrada</span>
+                  </div>
+                  <div class="model-card-body">
+                    <p>Ideal para experiencias agénticas rápidas con excelente comprensión multimodal.</p>
+                    <div class="model-card-meta">
+                      <span>Alias</span>
+                      <strong>gemini-flash-latest</strong>
+                    </div>
+                  </div>
+                </button>
+
+                <button class="model-card" type="button" data-model-id="gemini-flash-lite-latest" role="listitem">
+                  <div class="model-card-header">
+                    <span class="model-card-title">Gemini Flash Lite</span>
+                    <span class="model-card-subtitle">Ultra eficiente</span>
+                  </div>
+                  <div class="model-card-body">
+                    <p>Optimizado para costos bajos, respuestas concisas y traducción multimodal precisa.</p>
+                    <div class="model-card-meta">
+                      <span>Alias</span>
+                      <strong>gemini-flash-lite-latest</strong>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              <div id="model-info-container" class="info-panel"></div>
+            </section>
+
+            <section id="nav-section-api-keys" class="nav-section" hidden aria-label="Gestión de claves API">
+              <div id="api-key-container" class="card-grid"></div>
+            </section>
+
+            <section id="nav-section-settings" class="nav-section" hidden aria-label="Configuraciones adicionales">
+              <div class="info-panel">
+                <h4>Configuraciones</h4>
+                <p>Personaliza la aplicación. Próximamente más opciones.</p>
+              </div>
+
+              <div class="info-panel">
+                <h4>Créditos</h4>
+                <p>Desarrollado por Gorba Studio</p>
+                <p>Version 42 Divider</p>
+                <p>2025-10-23</p>
+              </div>
+              
+
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CUSTOM PROMPT MODAL -->
+  <div id="custom-prompt-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="custom-prompt-close">&times;</span>
+      <div class="modal-body">
+        <h3 id="custom-prompt-title">Ingrese un valor</h3>
+        <input type="text" id="custom-prompt-input" />
+        <div class="modal-actions">
+          <button id="custom-prompt-cancel" class="btn-cancel">Cancelar</button>
+          <button id="custom-prompt-confirm" class="btn-confirm">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING LOGO BUTTON -->
+  <button id="logo-btn" class="floating-btn" aria-label="Logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19.4 15C19.2655 15.2856 19.2655 15.7144 19.4 16C19.5345 16.2856 19.7345 16.7144 19.6 17L19.4 15ZM19.6 17C19.4655 17.2856 19.2655 17.7144 19.4 18C19.5345 18.2856 19.7345 18.7144 19.6 19L19.6 17ZM19.6 19C19.4655 19.2856 19.2655 19.7144 19.4 20C19.5345 20.2856 19.7345 20.7144 19.6 21L19.6 19ZM19.6 21C19.4655 21.2856 19.2655 21.7144 19.4 22C19.5345 22.2856 19.7345 22.7144 19.6 23L19.6 21ZM4.6 15L4.4 17L4.6 15ZM4.4 17L4.6 19L4.4 17ZM4.6 19L4.4 21L4.6 19ZM4.4 21L4.6 23L4.4 21ZM12 2V4M16.95 4.55L15.535 5.965M20 12H22M16.95 19.45L15.535 18.035M12 20V22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <script src="components/index.js" type="module" defer></script>
+  <script src="components/sidebar-navigation.js" type="module" defer></script>
+  <script src="scripts/logo-button.js" type="module" defer></script>
+  <script src="scripts/input-tray.js" type="module" defer></script>
+</body>
+</html>
