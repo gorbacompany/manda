@@ -1,0 +1,151 @@
+/* Messages */
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius);
+  background: var(--gradient-dark-panel);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 30px rgba(20, 22, 33, 0.45);
+  transition: all var(--transition-medium);
+}
+
+.msg--user {
+  background: linear-gradient(160deg, rgba(91, 59, 227, 0.28), rgba(62, 67, 86, 0.95));
+  border: 1px solid rgba(138, 99, 255, 0.4);
+}
+
+.msg--assistant {
+  background: linear-gradient(160deg, rgba(74, 79, 97, 0.92), rgba(55, 59, 76, 0.9));
+}
+
+.msg-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(91, 59, 227, 0.22);
+  flex-shrink: 0;
+}
+
+.msg-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.msg-timestamp {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.msg-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.msg-content pre {
+  background: rgba(49, 53, 70, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  padding: 2px 2px 2px 2px;
+  overflow-x: auto;
+  margin: 2px 0;
+  position: relative;
+}
+
+.msg-content code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85rem;
+}
+
+.msg-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.msg-actions .msg-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 2px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  background: linear-gradient(#ffffff, #f5efdc);
+  box-shadow: 0 6px 16px var(--shadow);
+  color: var(--text-secondary);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  cursor: pointer;
+}
+
+.msg-actions .msg-action .msg-action-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.msg-actions .msg-action:hover,
+.msg-actions .msg-action:focus-visible {
+  background: linear-gradient(135deg, rgba(76, 52, 255, 0.18), #f4ecd4);
+  border-color: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 10px 20px var(--shadow-strong);
+  color: var(--accent-contrast);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.msg-actions .msg-action:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.code-copy-btn {
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(76, 52, 255, 0.16);
+  color: var(--accent-contrast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+
+.code-copy-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.code-copy-btn:hover,
+.code-copy-btn:focus-visible {
+  background: rgba(76, 52, 255, 0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px var(--shadow);
+  outline: none;
+}
+
+.code-copy-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 4px 12px var(--shadow);
+}

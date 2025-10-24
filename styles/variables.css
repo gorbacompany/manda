@@ -1,0 +1,92 @@
+:root {
+  /* =======================================================
+     🌞 THEME SOLARIZED–BEIGE–SILVER LIGHT (WEBAPP)
+     ======================================================= */
+
+  /* ---------- BASE BACKGROUNDS ---------- */
+  --bg-main: #fdf6e3;
+  --bg-panel: #f5efdc;
+  --bg-alt: #ebe4ce;
+  --bg-chat: #f9f5e8;
+
+  /* ---------- BORDERS & SHADOWS ---------- */
+  --border: #d6cfae;
+  --border-strong: #c8bd95;
+  --glass-border: rgba(214, 207, 174, 0.65);
+  --shadow: rgba(0, 0, 0, 0.08);
+  --shadow-strong: rgba(0, 0, 0, 0.16);
+
+  /* ---------- TYPOGRAPHY ---------- */
+  --text-main: #333333;
+  --text-secondary: #555555;
+  --text-muted: #7b7b7b;
+  --text-inverse: #fdf6e3;
+  --text: var(--text-main);
+  --muted: var(--text-muted);
+  --link-active: #4c34ff;
+  --ui-muted: #aaa087;
+
+  /* ---------- ACCENTS ---------- */
+  --accent-solid: #6653ff;
+  --accent: linear-gradient(135deg, #4c34ff, #8d61ff);
+  --accent-hover: linear-gradient(135deg, #593eff, #a072ff);
+  --accent-contrast: #2f2bdc;
+  --accent-secondary: #7c64ff;
+  --accent-weak: rgba(76, 52, 255, 0.18);
+  --success: #6f8f00;
+  --warning: #b14612;
+  --error: #c82825;
+  --info: #2f7fb8;
+
+  /* ---------- METALLIC / SILVER ---------- */
+  --silver: linear-gradient(135deg, #fafafa, #e5e5e5);
+
+  /* ---------- GRADIENTS ---------- */
+  --gradient-chat: linear-gradient(135deg, #fdf6e3 0%, #f9f5e8 55%, #f5efdc 100%);
+  --gradient-dark-panel: linear-gradient(145deg, #f9f5e8, #f5efdc);
+  --gradient-primary: var(--accent);
+  --gradient-accent: var(--accent);
+  --gradient-accent-weak: linear-gradient(135deg, rgba(76, 52, 255, 0.16), rgba(141, 97, 255, 0.28));
+  --gradient-sunlit-cream: linear-gradient(135deg, #fefcf7, #f5efdc);
+  --gradient-soft-metal: linear-gradient(135deg, #f8f8f8, #dfdfdf);
+  --gradient-warm-mist: linear-gradient(120deg, #f9f5e8, #fdf9f0);
+  --gradient-beige-glow: linear-gradient(145deg, #f3ebd4, #f9f4e7);
+  --menu-card-hover: linear-gradient(135deg, rgba(76, 52, 255, 0.12), rgba(141, 97, 255, 0.25));
+  --button-gradient: linear-gradient(135deg, #4c34ff, #8d61ff);
+  --input-tray-gradient: linear-gradient(135deg, rgba(245, 239, 220, 0.95), rgba(233, 225, 199, 0.9));
+
+  /* ---------- LOGO LEGACY (ALIAS TO NEW ACCENTS) ---------- */
+  --logo-indigo: #4c34ff;
+  --logo-purple: #8d61ff;
+  --logo-dark-blue: #2f2bdc;
+  --logo-bright-violet: #a072ff;
+  --logo-gradient-indigo-purple: linear-gradient(135deg, #2f2bdc, #8d61ff);
+  --logo-gradient-darkblue-violet: linear-gradient(135deg, #2f2bdc, #a072ff);
+  --logo-gradient-combined: linear-gradient(135deg, #2f2bdc, #8d61ff, #4c34ff);
+
+  /* ---------- UI STRUCTURE ---------- */
+  --surface-glass: rgba(214, 207, 174, 0.35);
+  --input-field-bg: #ffffff;
+  --button-icon-color: var(--text-secondary);
+  --status-bar-height: 0px;
+
+  /* ---------- DIMENSIONS & MOTION ---------- */
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-round: 50%;
+  --card-padding: 1rem;
+  --transition-fast: 0.18s ease;
+  --transition: 0.25s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---------- SPACING ---------- */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 28px;
+}
