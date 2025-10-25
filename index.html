@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="styles/input-tray.css" />
   <!-- Dark theme CSS (AMOLED True Black) -->
   <link rel="stylesheet" href="styles/dark.css" />
+  <link id="theme-stylesheet" rel="stylesheet" href="styles/theme-dark.css" />
   <link rel="icon" href="components/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
@@ -52,52 +53,55 @@
   <!-- OVERLAY PARA CERRAR SIDEBAR EN MÓVILES -->
   <div class="sidebar-overlay"></div>
 
-  <div class="app" role="application" aria-label="Manda Studio">
-    <section class="chat-wrap" aria-live="polite">
-      <main class="messages" id="messages" tabindex="0" aria-label="Mensajes"></main>
+  <div class="app">
+    <section class="chat-wrap">
+      <main class="messages" id="messages" tabindex="0"></main>
     </section>
 
     <!-- INPUT TRAY -->
-    <div class="input-tray" role="region" aria-label="Escribir mensaje">
-      <input type="file" id="fileInput" accept=".txt,.md,.pdf,.doc,.docx,image/*,audio/*,video/*" multiple aria-label="Seleccionar archivos" hidden />
-      <div id="attachmentPreview" class="attachment-preview" aria-live="polite"></div>
-      <div id="sendStatus" class="send-status" role="status" aria-live="assertive"></div>
+    <div class="input-tray">
+      <input type="file" id="fileInput" accept=".txt,.md,.pdf,.doc,.docx,image/*,audio/*,video/*" multiple hidden />
+      <div id="attachmentPreview" class="attachment-preview"></div>
+      <div id="sendStatus" class="send-status"></div>
 
       <div class="input-controls">
         <button class="tray-btn tray-btn--ghost attach-btn" id="attachBtn" title="Adjuntar" aria-label="Adjuntar archivo">
-          <img src="components/cloud-upload.svg" alt="Adjuntar archivo" class="tray-icon" width="20" height="20" aria-hidden="true">
-          <span class="sr-only">Subir</span>
+          <svg class="tray-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 1 1-2.83-2.83l8.49-8.48" />
+          </svg>
         </button>
 
-        <textarea id="input" class="input-tray__textarea" placeholder="Escribe un mensaje..." rows="1" aria-label="Escribir mensaje"></textarea>
+        <textarea id="input" class="input-tray__textarea" placeholder="Escribe un mensaje..." rows="1"></textarea>
 
         <button class="tray-btn tray-btn--primary send-btn" id="sendBtn" title="Enviar" aria-label="Enviar mensaje">
-          <img src="components/send-svgrepo-com (6).svg" alt="Enviar mensaje" class="tray-icon send-icon" width="20" height="20" aria-hidden="true">
-          <span class="sr-only">Enviar</span>
+          <svg class="tray-icon send-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2 11 13" />
+            <path d="M22 2 15 22 11 13 2 9 22 2" />
+          </svg>
         </button>
       </div>
     </div>
   </div>
 
   <!-- CHAT LIST SIDEBAR -->
-  <aside id="chat-list-sidebar" class="chat-list-sidebar" aria-hidden="true">
+  <aside id="chat-list-sidebar" class="chat-list-sidebar">
     <div class="sidebar-shell">
       <div class="sidebar-top-bar">
         <h3 class="sidebar-title">Manda Studio</h3>
       </div>
 
       <div class="card-navigation-container" data-active-panel="A">
-        <div id="panel-A" class="nav-panel" aria-labelledby="panel-a-title">
-          <div id="nav-card-grid" class="card-grid nav-card-grid" role="list"></div>
+        <div id="panel-A" class="nav-panel">
+          <div id="nav-card-grid" class="card-grid nav-card-grid"></div>
         </div>
 
-        <div id="panel-B" class="nav-panel" aria-labelledby="panel-b-title">
+        <div id="panel-B" class="nav-panel">
           <div class="panel-header">
-            <button class="back-button" type="button" aria-label="Volver">←</button>
+            <button class="back-button" type="button">←</button>
             <h3 id="panel-b-title" class="panel-title"></h3>
           </div>
           <div class="panel-body">
-            <section id="nav-section-history" class="nav-section" hidden aria-label="Historial de chats">
+            <section id="nav-section-history" class="nav-section" hidden>
               <div class="section-heading">
                 <button id="new-chat-btn" class="new-chat-btn">+ Nuevo Chat</button>
                 <button id="merge-chats-btn" class="new-chat-btn" disabled>Fusionar chats</button>
@@ -105,19 +109,19 @@
               <div id="chat-list-container" class="chat-list-container"></div>
             </section>
 
-            <section id="nav-section-params" class="nav-section" hidden aria-label="Parámetros del modelo">
+            <section id="nav-section-params" class="nav-section" hidden>
               <div id="params-info-container" class="info-panel"></div>
             </section>
 
-            <section id="nav-section-model" class="nav-section" hidden aria-label="Detalles del modelo">
-              <div class="model-cards" role="list">
-                <button class="model-card" type="button" data-model-id="gemini-2.5-pro" role="listitem">
+            <section id="nav-section-model" class="nav-section" hidden>
+              <div class="model-cards">
+                <button class="model-card" type="button" data-model-id="gemini-2.5-pro">
                   <div class="model-card-header">
                     <span class="model-card-title">Gemini 2.5 Pro</span>
-                    <span class="model-card-subtitle">Razonamiento avanzado</span>
+                    <span class="model-card-subtitle">Thinking steps avanzados</span>
                   </div>
                   <div class="model-card-body">
-                    <p>Modelo profesional con análisis multimodal profundo y enorme ventana de contexto.</p>
+                    <p>Modelo insignia con razonamiento profundo, contexto amplio y soporte completo para entradas multimodales.</p>
                     <div class="model-card-meta">
                       <span>Alias</span>
                       <strong>gemini-2.5-pro</strong>
@@ -125,30 +129,30 @@
                   </div>
                 </button>
 
-                <button class="model-card" type="button" data-model-id="gemini-2.5-flash-latest" role="listitem">
+                <button class="model-card" type="button" data-model-id="gemini-flash-latest">
                   <div class="model-card-header">
-                    <span class="model-card-title">Gemini 2.5 Flash</span>
-                    <span class="model-card-subtitle">Equilibrio producción</span>
+                    <span class="model-card-title">Gemini Flash Latest</span>
+                    <span class="model-card-subtitle">Velocidad y calidad equilibradas</span>
                   </div>
                   <div class="model-card-body">
-                    <p>Respuestas veloces con calidad sólida y coste moderado para apps en producción.</p>
+                    <p>Flash de última generación para agentes y producción en tiempo real con baja latencia.</p>
                     <div class="model-card-meta">
                       <span>Alias</span>
-                      <strong>gemini-2.5-flash-latest</strong>
+                      <strong>gemini-flash-latest</strong>
                     </div>
                   </div>
                 </button>
 
-                <button class="model-card" type="button" data-model-id="gemini-2.5-flash-lite-latest" role="listitem">
+                <button class="model-card" type="button" data-model-id="gemini-flash-lite-latest">
                   <div class="model-card-header">
-                    <span class="model-card-title">Gemini 2.5 Flash Lite</span>
-                    <span class="model-card-subtitle">Ultra eficiente</span>
+                    <span class="model-card-title">Gemini Flash Lite</span>
+                    <span class="model-card-subtitle">Máxima eficiencia</span>
                   </div>
                   <div class="model-card-body">
-                    <p>Coste mínimo para cargas masivas y asistentes ligeros con soporte multimodal.</p>
+                    <p>Variante ligera para despliegues masivos con costes reducidos y respuesta ágil.</p>
                     <div class="model-card-meta">
                       <span>Alias</span>
-                      <strong>gemini-2.5-flash-lite-latest</strong>
+                      <strong>gemini-flash-lite-latest</strong>
                     </div>
                   </div>
                 </button>
@@ -157,25 +161,179 @@
               <div id="model-info-container" class="info-panel"></div>
             </section>
 
-            <section id="nav-section-api-keys" class="nav-section" hidden aria-label="Gestión de claves API">
+            <section id="nav-section-api-keys" class="nav-section" hidden>
               <div id="api-key-container" class="card-grid"></div>
             </section>
 
-            <section id="nav-section-settings" class="nav-section" hidden aria-label="Configuraciones adicionales">
+            <section id="nav-section-settings" class="nav-section" hidden>
               <div class="info-panel">
-                <h4>Configuraciones</h4>
-                  <p>Personaliza la aplicación.</p>
-                  <p>Próximamente más opciones.</p>
+                <h4>Configuraciones avanzadas</h4>
+                <p>Configura la apariencia y el comportamiento general de Manda Studio.</p>
+              </div>
+
+              <div class="settings-grid">
+                <article class="settings-card">
+                  <header>
+                    <h5>Fondo del área de mensajes</h5>
+                    <p>Define una imagen personalizada o un color sólido para la zona de conversación.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label for="cfg-background-image">URL de imagen</label>
+                    <input id="cfg-background-image" type="url" placeholder="https://..." />
+                  </div>
+                  <div class="settings-field">
+                    <label for="cfg-background-opacity">Opacidad</label>
+                    <input id="cfg-background-opacity" type="range" min="0" max="1" step="0.05" value="1" />
+                  </div>
+                </article>
+
+                <article class="settings-card settings-card--theme">
+                  <header>
+                    <h5>Tema de la interfaz</h5>
+                    <p>Alterna entre los esquemas de color disponibles. Solo se modifican variables cromáticas.</p>
+                  </header>
+                  <div class="theme-selector" role="group" aria-label="Temas disponibles">
+                    <button type="button" class="theme-chip" data-theme="dark">Oscuro clásico</button>
+                    <button type="button" class="theme-chip" data-theme="light">Claro</button>
+                    <button type="button" class="theme-chip" data-theme="indigo-dark">Índigo gris oscuro</button>
+                    <button type="button" class="theme-chip" data-theme="indigo-light">Índigo gris claro</button>
+                  </div>
+                  <p class="theme-selector__hint">Tu elección se guarda en este dispositivo y solo ajusta los colores base.</p>
+                </article>
+
+                <article class="settings-card">
+                  <header>
+                    <h5>Tipografía</h5>
+                    <p>Elige la familia tipográfica preferida.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label for="cfg-font-family">Fuente</label>
+                    <select id="cfg-font-family">
+                      <option value="system">Sistema</option>
+                      <option value="serif">Serif</option>
+                      <option value="sans-serif">Sans Serif</option>
+                      <option value="mono">Monoespaciada</option>
+                      <option value="handwriting">Caligráfica</option>
+                    </select>
+                  </div>
+                </article>
+
+                <article class="settings-card">
+                  <header>
+                    <h5>Tamaño de fuente</h5>
+                    <p>Ajusta la legibilidad de los mensajes.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label for="cfg-font-size">Tamaño</label>
+                    <input id="cfg-font-size" type="number" min="12" max="32" step="1" value="16" />
+                  </div>
+                </article>
+
+                <article class="settings-card">
+                  <header>
+                    <h5>Estilo de burbujas</h5>
+                    <p>Establece el aspecto visual de los mensajes.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label for="cfg-bubble-style">Estilo</label>
+                    <select id="cfg-bubble-style">
+                      <option value="rounded">Redondeado</option>
+                      <option value="pill">Pastilla</option>
+                      <option value="flat">Plano</option>
+                      <option value="outline">Contorno</option>
+                      <option value="glass">Cristal</option>
+                    </select>
+                  </div>
+                </article>
+
+                <article class="settings-card">
+                  <header>
+                    <h5>Densidad del chat</h5>
+                    <p>Controla el espaciado vertical entre mensajes.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label for="cfg-chat-density">Densidad</label>
+                    <select id="cfg-chat-density">
+                      <option value="compact">Compacto</option>
+                      <option value="comfortable" selected>Cómodo</option>
+                      <option value="relaxed">Relajado</option>
+                    </select>
+                  </div>
+                </article>
+
+                <article class="settings-card">
+                  <header>
+                    <h5>Formato de hora</h5>
+                    <p>Personaliza la visualización de las marcas de tiempo.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label for="cfg-timestamp-format">Formato</label>
+                    <select id="cfg-timestamp-format">
+                      <option value="24h" selected>24 horas</option>
+                      <option value="12h">12 horas</option>
+                      <option value="relative">Relativo</option>
+                    </select>
+                  </div>
+                </article>
+
+                <article class="settings-card">
+                  <header>
+                    <h5>Sonidos de notificación</h5>
+                    <p>Gestiona alertas auditivas para nuevos mensajes.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label><input type="checkbox" id="cfg-notification-enabled" checked /> Activar sonidos</label>
+                  </div>
+                  <div class="settings-field">
+                    <label for="cfg-notification-sound">Sonido</label>
+                    <select id="cfg-notification-sound">
+                      <option value="default">Predeterminado</option>
+                      <option value="chime">Campanilla</option>
+                      <option value="pop">Pop</option>
+                      <option value="soft">Suave</option>
+                    </select>
+                  </div>
+                </article>
+
+                <article class="settings-card">
+                  <header>
+                    <h5>Guardado automático</h5>
+                    <p>Controla la frecuencia de respaldo de tus chats.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label><input type="checkbox" id="cfg-autosave-enabled" checked /> Activar guardado automático</label>
+                  </div>
+                  <div class="settings-field">
+                    <label for="cfg-autosave-interval">Intervalo (min)</label>
+                    <input id="cfg-autosave-interval" type="number" min="1" max="60" step="1" value="5" />
+                  </div>
+                </article>
+
+                <article class="settings-card">
+                  <header>
+                    <h5>Idioma de la interfaz</h5>
+                    <p>Selecciona el idioma preferido para los textos de la app.</p>
+                  </header>
+                  <div class="settings-field">
+                    <label for="cfg-language">Idioma</label>
+                    <select id="cfg-language">
+                      <option value="es-MX" selected>Español (México)</option>
+                      <option value="es-ES">Español (España)</option>
+                      <option value="en-US">English (US)</option>
+                      <option value="pt-BR">Português (Brasil)</option>
+                      <option value="fr-FR">Français (France)</option>
+                    </select>
+                  </div>
+                </article>
+
               </div>
 
               <div class="info-panel">
                 <h4>Créditos</h4>
                 <p>Desarrollado por Gorba Studio</p>
-                <p>Version 47 Reloaded</p>
-                <p>2025-10-24</p>
+                <p>Version 53 Refined</p>
+                <p>2025-10-25</p>
               </div>
-              
-
             </section>
           </div>
         </div>
@@ -199,15 +357,15 @@
   </div>
 
   <!-- FLOATING LOGO BUTTON -->
-  <button id="logo-btn" class="floating-btn" aria-label="Logo">
+  <button id="logo-btn" class="floating-btn">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M19.4 15C19.2655 15.2856 19.2655 15.7144 19.4 16C19.5345 16.2856 19.7345 16.7144 19.6 17L19.4 15ZM19.6 17C19.4655 17.2856 19.2655 17.7144 19.4 18C19.5345 18.2856 19.7345 18.7144 19.6 19L19.6 17ZM19.6 19C19.4655 19.2856 19.2655 19.7144 19.4 20C19.5345 20.2856 19.7345 20.7144 19.6 21L19.6 19ZM19.6 21C19.4655 21.2856 19.2655 21.7144 19.4 22C19.5345 22.2856 19.7345 22.7144 19.6 23L19.6 21ZM4.6 15L4.4 17L4.6 15ZM4.4 17L4.6 19L4.4 17ZM4.6 19L4.4 21L4.6 19ZM4.4 21L4.6 23L4.4 21ZM12 2V4M16.95 4.55L15.535 5.965M20 12H22M16.95 19.45L15.535 18.035M12 20V22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
 
-  <script src="components/index.js" type="module" defer></script>
-  <script src="components/sidebar-navigation.js" type="module" defer></script>
+  <script src="scripts/index.js" type="module" defer></script>
+  <script src="scripts/sidebar-navigation.js" type="module" defer></script>
   <script src="scripts/logo-button.js" type="module" defer></script>
   <script src="scripts/input-tray.js" type="module" defer></script>
 </body>
