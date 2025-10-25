@@ -28,6 +28,9 @@
   grid-template-columns: auto 1fr auto;
   gap: 10px;
   align-items: flex-end;
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .input-tray__textarea {
@@ -60,6 +63,18 @@ box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
   margin-bottom: 8px;
   color: var(--text);
   font-size: 0.9rem;
+}
+
+#attachmentPreview:empty {
+  display: none;
+  padding: 0;
+  margin: 0;
+}
+
+#sendStatus:empty {
+  display: none;
+  padding: 0;
+  margin: 0;
 }
 
 #sendStatus {

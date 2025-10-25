@@ -1,0 +1,36 @@
+/* =======================================================
+   THEME: Manda Dark
+   Minimal overrides focused on color variables only.
+   ======================================================= */
+
+:root[data-theme="dark"] {
+  --background: #101018;
+  --panel: #161626;
+  --card: #1c1c2e;
+  --surface-hover: #24243a;
+  --border: #2f2f45;
+  --text: #f4f4ff;
+  --text-muted: #9ea0c3;
+  --placeholder: #6d6f92;
+  --accent: #6366f1;
+  --accent-hover: #8185ff;
+  --accent-gradient: linear-gradient(135deg, #4338ca 0%, #4c1d95 100%);
+  --accent-shadow: 0 0 12px rgba(99, 102, 241, 0.35);
+  --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-strong: 0 6px 18px rgba(0, 0, 0, 0.45);
+  --radius: 14px;
+  --transition: 0.25s ease;
+}
+
+body[data-theme="dark"],
+:root[data-theme="dark"] body {
+  background: var(--background);
+  color: var(--text);
+}
+
+.theme-chip[data-theme="dark"] {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  box-shadow: var(--accent-shadow);
+}

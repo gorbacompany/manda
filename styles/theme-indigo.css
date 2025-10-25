@@ -1,0 +1,186 @@
+/* =======================================================
+   THEME: INDIGO GRIS OSCURO
+   ======================================================= */
+
+:root[data-theme="indigo-dark"] {
+  /* ======= PALETA BASE ======= */
+  --background: #1c1c25;
+  --panel: #232331;
+  --card: #2b2b3b;
+  --surface-hover: #303044;
+  --border: #38384a;
+  --text: #e9e9ef;
+  --text-muted: #a0a0b3;
+  --placeholder: #76768b;
+
+  /* ======= ÍNDIGO-VIOLETA ======= */
+  --indigo-blue: #0000ff;
+  --indigo-azure: #3a00ff;
+  --indigo-true: #4b0082;
+  --indigo-electric: #5a00ff;
+  --indigo-violet: #7a00ff;
+  --violet-core: #8a2be2;
+  --violet-soft: #b57cff;
+
+  /* ======= ACENTOS Y GRADIENTES ======= */
+  --accent: var(--indigo-electric);
+  --accent-hover: var(--indigo-violet);
+  --accent-gradient: linear-gradient(135deg,
+    var(--indigo-blue) 0%,
+    var(--indigo-azure) 25%,
+    var(--indigo-true) 50%,
+    var(--indigo-electric) 75%,
+    var(--indigo-violet) 100%);
+  --accent-shadow: 0 0 12px rgba(90, 0, 255, 0.35);
+
+  /* ======= EFECTOS ======= */
+  --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-strong: 0 4px 14px rgba(0, 0, 0, 0.55);
+  --radius: 14px;
+  --transition: 0.25s ease;
+
+  /* ======= VARIABLES LEGADAS ======= */
+  --bg-main: var(--background);
+  --bg-panel: var(--panel);
+  --bg-alt: var(--card);
+  --bg-chat: linear-gradient(180deg, #1a1a24 0%, #17171f 100%);
+  --panel-elevated: var(--card);
+  --surface-glass: rgba(48, 48, 68, 0.6);
+  --border-strong: #44445a;
+  --glass-border: rgba(88, 88, 120, 0.45);
+  --shadow: rgba(0, 0, 0, 0.45);
+  --text-main: var(--text);
+  --text-secondary: var(--text-muted);
+  --muted: var(--text-muted);
+  --link-active: var(--accent);
+  --accent-solid: var(--accent);
+  --accent-secondary: var(--indigo-violet);
+  --accent-weak: rgba(90, 0, 255, 0.24);
+  --input-field-bg: var(--panel);
+  --button-icon-color: var(--text);
+  --gradient-chat: radial-gradient(circle at bottom right, #1a1a24 0%, #17171f 100%);
+  --gradient-dark-panel: linear-gradient(160deg, #2b2b3b, #232331);
+  --gradient-primary: var(--accent-gradient);
+  --gradient-accent: var(--accent-gradient);
+  --gradient-accent-weak: linear-gradient(135deg, rgba(90, 0, 255, 0.14), rgba(122, 0, 255, 0.24));
+  --input-tray-gradient: linear-gradient(135deg, rgba(35, 35, 49, 0.95), rgba(24, 24, 36, 0.9));
+}
+
+body[data-theme="indigo-dark"],
+:root[data-theme="indigo-dark"] body {
+  background-color: var(--background);
+  color: var(--text);
+}
+
+.app,
+.panel,
+.card,
+.model-card,
+.settings-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition);
+}
+
+.model-card:hover,
+.settings-card:hover {
+  background-color: var(--surface-hover);
+  box-shadow: var(--shadow-strong);
+}
+
+button,
+.tray-btn {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--accent-shadow);
+  transition: var(--transition);
+}
+
+button:hover,
+.tray-btn:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 16px rgba(122, 0, 255, 0.5);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  background-color: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(90, 0, 255, 0.6);
+}
+
+.messages {
+  background: radial-gradient(circle at bottom right,
+    #1a1a24 0%, #17171f 100%);
+  color: var(--text);
+}
+
+.message.user {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--accent-shadow);
+}
+
+.message.bot {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.input-tray {
+  background-color: var(--panel);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.input-tray__textarea {
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius);
+}
+
+.chat-list-sidebar,
+.sidebar-shell {
+  background-color: var(--panel);
+  color: var(--text);
+  border-right: 1px solid var(--border);
+}
+
+.sidebar-title {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.theme-chip[data-theme="indigo-dark"] {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  box-shadow: var(--accent-shadow);
+}
+
+* {
+  transition: background-color var(--transition),
+              color var(--transition),
+              border-color var(--transition);
+}

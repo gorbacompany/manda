@@ -4,7 +4,7 @@
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.nav-panel[aria-labelledby="panel-b-title"] {
+.nav-panel {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
   position: absolute;
   top: 0;

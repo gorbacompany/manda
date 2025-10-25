@@ -1,0 +1,36 @@
+/* =======================================================
+   THEME: Manda Light
+   Minimal color-only overrides.
+   ======================================================= */
+
+:root[data-theme="light"] {
+  --background: #f7f7fc;
+  --panel: #ffffff;
+  --card: #ffffff;
+  --surface-hover: #f1f1fb;
+  --border: #d9dcf2;
+  --text: #181a2e;
+  --text-muted: #4a4d78;
+  --placeholder: #7b7fa8;
+  --accent: #4f46e5;
+  --accent-hover: #3730a3;
+  --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --accent-shadow: 0 0 12px rgba(79, 70, 229, 0.25);
+  --shadow-soft: 0 2px 6px rgba(15, 23, 42, 0.12);
+  --shadow-strong: 0 10px 30px rgba(15, 23, 42, 0.18);
+  --radius: 14px;
+  --transition: 0.25s ease;
+}
+
+body[data-theme="light"],
+:root[data-theme="light"] body {
+  background: var(--background);
+  color: var(--text);
+}
+
+.theme-chip[data-theme="light"] {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  box-shadow: var(--accent-shadow);
+}

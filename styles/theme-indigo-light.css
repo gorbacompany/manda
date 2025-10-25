@@ -1,0 +1,44 @@
+/* =======================================================
+   THEME: Indigo Gris Claro
+   ======================================================= */
+
+:root[data-theme="indigo-light"] {
+  --background: #f4f4ff;
+  --panel: #ffffff;
+  --card: #faf8ff;
+  --surface-hover: #efedfb;
+  --border: #d3d2f5;
+  --text: #1d1933;
+  --text-muted: #4f4a70;
+  --placeholder: #7a76a3;
+  --indigo-blue: #0000ff;
+  --indigo-azure: #3a00ff;
+  --indigo-true: #4b0082;
+  --indigo-electric: #5a00ff;
+  --indigo-violet: #7a00ff;
+  --violet-core: #8a2be2;
+  --violet-soft: #b57cff;
+  --accent: var(--indigo-true);
+  --accent-hover: var(--indigo-electric);
+  --accent-gradient: linear-gradient(135deg,
+    rgba(90, 0, 255, 0.85) 0%,
+    rgba(71, 0, 200, 0.9) 100%);
+  --accent-shadow: 0 0 12px rgba(90, 0, 255, 0.25);
+  --shadow-soft: 0 4px 12px rgba(72, 61, 139, 0.12);
+  --shadow-strong: 0 12px 28px rgba(72, 61, 139, 0.2);
+  --radius: 14px;
+  --transition: 0.25s ease;
+}
+
+body[data-theme="indigo-light"],
+:root[data-theme="indigo-light"] body {
+  background: var(--background);
+  color: var(--text);
+}
+
+.theme-chip[data-theme="indigo-light"] {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  box-shadow: var(--accent-shadow);
+}

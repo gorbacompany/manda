@@ -85,8 +85,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.55);
   background: linear-gradient(#ffffff, #f5efdc);
@@ -96,8 +97,9 @@
 }
 
 .chat-control-btn svg {
-  width: 16px;
-  height: 16px;
+  display: block;
+  width: 18px;
+  height: 18px;
   stroke: currentColor;
 }
 

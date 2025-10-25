@@ -1,9 +1,9 @@
 // scripts/input-tray.js - Lógica para el área de entrada de texto
 
-import { sendToGemini } from '../components/google-api.js';
-import { getPendingAttachments, setAttachmentsStatus, showSendStatus, clearPendingAttachments } from '../components/file-handler.js';
-import { addMessageToChat } from '../components/chat-ui.js';
-import { getCurrentAIConfig } from '../components/ai-config.js';
+import { sendToGemini } from './google-api.js';
+import { getPendingAttachments, setAttachmentsStatus, showSendStatus, clearPendingAttachments } from './file-handler.js';
+import { addMessageToChat } from './chat-ui.js';
+import { getCurrentAIConfig } from './ai-config.js';
 
 // Estimación de tokens (aprox 1 token por 4 caracteres)
 function estimateTokens(text) {
@@ -23,44 +23,19 @@ function buildAttachmentDisplay(attachments, text) {
 // Función para construir el payload del prompt
 function buildPromptPayload(history, text, attachments) {
     const config = getCurrentAIConfig();
-    const sections = [config.systemPrompt];
 
-    let historyFormatted = '';
-    if (history && history.length > 0) {
-        // Formatar historial, recortar si necesario
-        let histItems = history.slice();
-        let isTrimmed = false;
-
-        while (true) {
-            const formatted = histItems.map(h => `${h.role === 'user' ? 'Usuario' : h.role === 'bot' ? 'Asistente' : 'Sistema'}: ${h.content}`).join('\n\n');
-            const tempTxt = [config.systemPrompt, `Historial de conversación:\n${formatted}`, ...(attachments.length ? [
-                (() => {
-                    const summary = attachments.map((attachment, index) => {
-                        const typeLabel = attachment.type || 'tipo desconocido';
-                        const sizeLabel = Number.isFinite(attachment.size) ? `${Math.max(1, Math.round(attachment.size / 1024))} KB` : '';
-                        const suffix = [typeLabel, sizeLabel].filter(Boolean).join(' · ');
-                        return `${index + 1}. ${attachment.name}${suffix ? ` (${suffix})` : ''}`;
-                    }).join('\n');
-                    return `Archivos adjuntos proporcionados por el usuario:\n${summary}`;
-                })()
-            ] : []), text ? `Mensaje del usuario:\n${text}` : 'Mensajes:\n' + attachments.map(a => `• ${a.name}`).join('\n')].join('\n\n');
-
-            const estTokens = estimateTokens(tempTxt);
-            if (estTokens <= config.maxTokens) {
-                historyFormatted = `Historial de conversación:\n${formatted}`;
-                break;
-            } else if (histItems.length > 0) {
-                histItems.shift(); // Remover el más antiguo
-                isTrimmed = true;
-            } else {
-                // No more history to trim, but still over, but since 250k is large, probably ok, but for now, proceed
-                historyFormatted = `Historial de conversación:\n${formatted}`;
-                break;
-            }
-        }
+    const lines = [];
+    if (config.systemPrompt?.trim()) {
+        lines.push(`System prompt:\n${config.systemPrompt.trim()}`);
     }
 
-    if (historyFormatted) sections.push(historyFormatted);
+    if (history && history.length > 0) {
+        const formattedHistory = history.map((entry) => {
+            const roleLabel = entry.role === 'user' ? 'Usuario' : entry.role === 'bot' ? 'Asistente' : 'Sistema';
+            return `${roleLabel}: ${entry.content}`;
+        }).join('\n\n');
+        lines.push(`Historial de conversación:\n${formattedHistory}`);
+    }
 
     if (attachments.length) {
         const summary = attachments.map((attachment, index) => {
@@ -69,20 +44,47 @@ function buildPromptPayload(history, text, attachments) {
             const suffix = [typeLabel, sizeLabel].filter(Boolean).join(' · ');
             return `${index + 1}. ${attachment.name}${suffix ? ` (${suffix})` : ''}`;
         }).join('\n');
-        sections.push(`Archivos adjuntos proporcionados por el usuario:\n${summary}`);
+        lines.push(`Archivos adjuntos:\n${summary}`);
+    }
 
-        const textualAttachments = attachments.filter((attachment) => typeof attachment.content === 'string' && attachment.content.trim().length);
-        if (textualAttachments.length) {
-            const combinedText = textualAttachments.map((attachment) => `--- ${attachment.name} ---\n${attachment.content}`).join('\n\n');
-            sections.push(`Contenido textual de los adjuntos:\n${combinedText}`);
+    if (text?.trim()) {
+        lines.push(`Mensaje del usuario:\n${text.trim()}`);
+    }
+
+    return lines.join('\n\n');
+}
+
+function buildGeminiContents(promptText, attachments) {
+    const parts = [];
+
+    if (promptText.trim().length) {
+        parts.push({ text: promptText });
+    }
+
+    attachments.forEach((attachment) => {
+        if (attachment.inlineData) {
+            parts.push({ inlineData: attachment.inlineData });
+        } else if (typeof attachment.content === 'string' && attachment.content.trim().length) {
+            parts.push({
+                text: `Contenido de ${attachment.name}:\n${attachment.content.trim()}`
+            });
+        } else if (attachment.inlineDataTooLarge) {
+            parts.push({
+                text: `Resumen requerido para ${attachment.name}: archivo excede 8MB y no se pudo incrustar.`
+            });
         }
+    });
+
+    if (!parts.length) {
+        parts.push({ text: 'Mensaje del usuario sin contenido textual ni adjuntos compatibles.' });
     }
 
-    if (text) {
-        sections.push(`Mensaje del usuario:\n${text}`);
-    }
-
-    return sections.join('\n\n');
+    return [
+        {
+            role: 'user',
+            parts
+        }
+    ];
 }
 
 // Extraer el historial actual de la conversación desde el DOM
@@ -142,7 +144,8 @@ async function handleSendMessage() {
 
     try {
         const prompt = buildPromptPayload(history, rawText, attachments);
-        const response = await sendToGemini(prompt);
+        const contents = buildGeminiContents(prompt, attachments);
+        const response = await sendToGemini(contents);
         const botText = response.candidates?.[0]?.content?.parts?.[0]?.text || 'Sin respuesta';
         addMessageToChat(botText, 'bot');
 

@@ -4,6 +4,20 @@
 /* Reset + system font stack (no externals) */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body,
+#messages {
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
 }
 
 html {
@@ -24,36 +38,13 @@ body {
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-  /* Combinar gradiente y logo como fondo */
-  background: 
-    var(--bg-main),
-    url('../components/logo.svg') center/contain no-repeat;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: var(--background, #0b0b12);
   color: var(--text-main);
   color-scheme: light;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-y: auto;
-  /* Ajustar el logo al menor valor entre ancho o alto con 50% de opacidad */
   position: relative;
-}
-
-body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('../components/logo.svg');
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.5; /* 50% de transparencia */
-  pointer-events: none;
-  z-index: -1;
 }
 
 .sr-only {
